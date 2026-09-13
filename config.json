@@ -1,0 +1,42 @@
+{
+  "endpoint": "",
+  "settings": {
+    "askEstimate": true,
+    "endless": true,
+    "maxRounds": 3,
+    "showCaptions": true,
+    "soundOn": true,
+    "testMode": false,
+    "pin": ""
+  },
+  "pace": {
+    "fastMin": 20,
+    "slowMax": 8
+  },
+  "pace_overrides": {
+    "k1-01": "mittel",
+    "k1-02": "langsam",
+    "k1-03": "mittel",
+    "k1-04": "schnell",
+    "k2-01": "schnell",
+    "k2-02": "mittel",
+    "k2-03": "schnell",
+    "k2-04": "mittel",
+    "k3-01": "mittel",
+    "k3-02": "langsam",
+    "k3-03": "langsam",
+    "k3-04": "langsam",
+    "k4-01": "langsam",
+    "k4-02": "langsam",
+    "k4-03": "langsam",
+    "k4-04": "langsam",
+    "k5-01": "langsam",
+    "k5-02": "schnell",
+    "k5-03": "schnell",
+    "k5-04": "schnell",
+    "k6-01": "mittel",
+    "k6-02": "mittel",
+    "k6-03": "mittel",
+    "k6-04": "mittel"
+  }
+}

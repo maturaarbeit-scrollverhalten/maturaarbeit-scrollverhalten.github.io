@@ -1,0 +1,2053 @@
+<!doctype html>
+<html lang="de">
+<head>
+<title>Feedlabor</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* ---------- tokens ---------- */
+:root {
+  color-scheme: light;
+  --plane: #f5f3f4;
+  --surface: #fdfcfc;
+  --surface-2: #efecef;
+  --ink: #17151a;
+  --ink-2: #625d66;
+  --ink-3: #8f8a93;
+  --line: #e6e2e6;
+  --line-2: #d6d0d7;
+  --accent: #e6335f;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(230, 51, 95, .12);
+  --good: #0ca30c;
+  --warn: #c98500;
+  --crit: #d03b3b;
+  --focus: #2a78d6;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --p1: #86b6ef; --p2: #2a78d6; --p3: #0d366b;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --shadow: 0 1px 2px rgba(23, 21, 26, .05), 0 10px 28px -14px rgba(23, 21, 26, .22);
+  --font-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 10px;
+  /* kiosk (participant side) is always dark */
+  --k-bg: #000;
+  --k-ink: #fff;
+  --k-ink-2: rgba(255, 255, 255, .72);
+  --k-accent: #ff3d6e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --plane: #121014;
+    --surface: #1b191e;
+    --surface-2: #26232a;
+    --ink: #f3f0f4;
+    --ink-2: #aaa4ae;
+    --ink-3: #7d7782;
+    --line: #2e2a32;
+    --line-2: #3d3842;
+    --accent: #ff3d6e;
+    --accent-soft: rgba(255, 61, 110, .18);
+    --good: #0ca30c;
+    --warn: #fab219;
+    --crit: #e66767;
+    --focus: #3987e5;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --p1: #184f95; --p2: #3987e5; --p3: #9ec5f4;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 30px -14px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane: #121014;
+  --surface: #1b191e;
+  --surface-2: #26232a;
+  --ink: #f3f0f4;
+  --ink-2: #aaa4ae;
+  --ink-3: #7d7782;
+  --line: #2e2a32;
+  --line-2: #3d3842;
+  --accent: #ff3d6e;
+  --accent-soft: rgba(255, 61, 110, .18);
+  --good: #0ca30c;
+  --warn: #fab219;
+  --crit: #e66767;
+  --focus: #3987e5;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --p1: #184f95; --p2: #3987e5; --p3: #9ec5f4;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 30px -14px rgba(0, 0, 0, .7);
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; }
+body {
+  margin: 0; min-height: 100%;
+  background: var(--plane); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h1 { font-size: 30px; font-weight: 800; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.wrap { max-width: 1060px; margin-inline: auto; padding-inline: 20px; }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+
+/* ---------- buttons, chips, forms ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 600; font-size: 14px; line-height: 1.2;
+  padding: 10px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--line-2); background: var(--surface); color: var(--ink);
+  transition: background .15s, border-color .15s, transform .08s;
+}
+.btn:hover { background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.primary:hover { filter: brightness(1.06); background: var(--accent); }
+.btn.danger { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 40%, transparent); }
+.btn.danger:hover { background: color-mix(in srgb, var(--crit) 10%, transparent); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--surface-2); }
+.btn.sm { padding: 6px 11px; font-size: 13px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn svg { width: 16px; height: 16px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; background: var(--surface-2); color: var(--ink-2); white-space: nowrap;
+}
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.chip.pace-schnell { color: var(--p3); background: color-mix(in srgb, var(--p3) 14%, transparent); }
+.chip.pace-mittel { color: var(--p2); background: color-mix(in srgb, var(--p2) 14%, transparent); }
+.chip.pace-langsam { color: var(--p1); background: color-mix(in srgb, var(--p1) 18%, transparent); }
+:root[data-theme="dark"] .chip.pace-langsam, :root[data-theme="dark"] .chip.pace-mittel { color: var(--ink); }
+.field { display: grid; gap: 6px; }
+.field > label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+input[type="text"], input[type="number"], input[type="password"], select, textarea {
+  font: inherit; padding: 9px 11px; border: 1px solid var(--line-2); border-radius: 8px;
+  background: var(--surface); color: var(--ink); width: 100%;
+}
+textarea { resize: vertical; min-height: 70px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.row.between { justify-content: space-between; }
+.stack { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.switch { display: flex; align-items: center; gap: 12px; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.switch:last-child { border-bottom: 0; }
+.switch .t { font-weight: 600; }
+.switch .d { font-size: 13px; color: var(--ink-2); }
+.switch input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+
+/* ---------- screens ---------- */
+.screen { min-height: 100vh; min-height: 100dvh; }
+.kiosk {
+  background: var(--k-bg); color: var(--k-ink);
+  display: grid; place-items: center; padding-inline: 20px; padding-block: 40px;
+  position: relative; text-align: center;
+}
+.kiosk-card { width: min(420px, 100%); display: grid; gap: 22px; justify-items: center; }
+.wordmark { font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: -.03em; line-height: 1; }
+.wordmark i { font-style: normal; color: var(--k-accent); }
+.kiosk .lead { font-size: 19px; line-height: 1.4; color: var(--k-ink); text-wrap: balance; }
+.kiosk .note { font-size: 13px; color: var(--k-ink-2); line-height: 1.5; }
+.btn-big {
+  font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -.01em;
+  background: var(--k-ink); color: #000; border: 0; border-radius: 999px;
+  padding: 16px 40px; cursor: pointer; transition: transform .1s;
+}
+.btn-big:hover { transform: scale(1.03); }
+.btn-big:active { transform: scale(.98); }
+.btn-big.accent { background: var(--k-accent); color: #fff; }
+.gear {
+  position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px;
+  width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent;
+  color: rgba(255, 255, 255, .35); cursor: pointer; display: grid; place-items: center;
+}
+.gear:hover { color: #fff; background: rgba(255, 255, 255, .1); }
+.gear svg { width: 20px; height: 20px; }
+.kiosk-banner {
+  position: absolute; left: 20px; right: 20px; bottom: calc(18px + env(safe-area-inset-bottom));
+  font-size: 13px; color: var(--k-ink-2); text-align: center; text-wrap: balance;
+}
+.kiosk-banner b { color: #fff; font-weight: 600; }
+.kiosk .field { text-align: left; width: 100%; }
+.kiosk input[type="number"] {
+  background: rgba(255, 255, 255, .08); color: #fff; border-color: rgba(255, 255, 255, .25);
+  font-size: 26px; text-align: center; font-family: var(--font-display); font-weight: 700; padding: 14px;
+}
+.kiosk .link { background: none; border: 0; color: var(--k-ink-2); text-decoration: underline; cursor: pointer; font-size: 14px; }
+.end-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.end-stats div { background: rgba(255, 255, 255, .07); border-radius: 12px; padding: 14px 10px; }
+.end-stats .v { font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1; }
+.end-stats .l { font-size: 12px; color: var(--k-ink-2); margin-top: 6px; }
+
+/* ---------- feed ---------- */
+.feed-screen { position: fixed; inset: 0; background: #000; color: #fff; z-index: 10; }
+.feed {
+  position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: min(100%, max(430px, 100vh * .5625));
+  width: min(100%, max(430px, 100dvh * .5625));
+  overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.feed::-webkit-scrollbar { display: none; }
+.slide {
+  position: relative; height: 100vh; height: 100dvh;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  background: #000; overflow: hidden; display: grid; place-items: center;
+}
+.slide video { width: 100%; height: 100%; object-fit: cover; background: #000; }
+.slide.fit-contain video { object-fit: contain; }
+.slide .tapzone { position: absolute; inset: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.slide .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0)); }
+.rail { position: absolute; right: 8px; bottom: calc(96px + env(safe-area-inset-bottom)); display: grid; gap: 14px; justify-items: center; }
+.rail .ri { display: grid; justify-items: center; gap: 1px; }
+.rail button {
+  width: 46px; height: 46px; border-radius: 50%; border: 0; background: transparent; padding: 0;
+  color: #fff; display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .7));
+}
+.rail button svg { width: 32px; height: 32px; }
+.rail button.snd svg { width: 26px; height: 26px; }
+.rail button.on { color: var(--k-accent); }
+.rail .rc { font-size: 12.5px; font-weight: 600; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .7); font-variant-numeric: tabular-nums; }
+.cap { position: absolute; left: 16px; right: 76px; bottom: calc(30px + env(safe-area-inset-bottom)); pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
+.cap .h { font-weight: 600; font-size: 15px; }
+.cap .c { font-size: 14px; color: rgba(255, 255, 255, .92); margin-top: 4px; text-wrap: pretty; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cap .m { font-size: 13px; color: rgba(255, 255, 255, .9); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .22); }
+.prog i { display: block; height: 100%; width: 0; background: #fff; }
+.paused-icon { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .15s; }
+.slide.paused .paused-icon { opacity: 1; }
+.paused-icon svg { width: 72px; height: 72px; color: rgba(255, 255, 255, .85); filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .5)); }
+.heart-burst { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.heart-burst svg { width: 120px; height: 120px; color: var(--k-accent); opacity: 0; transform: scale(.4); }
+.heart-burst.go svg { animation: burst .7s ease-out forwards; }
+@keyframes burst { 0% { opacity: 0; transform: scale(.4); } 25% { opacity: 1; transform: scale(1.15); } 60% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1) translateY(-20px); } }
+.feed-top { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding-inline: 14px; pointer-events: none; }
+.feed-top > * { pointer-events: auto; }
+.pill {
+  background: rgba(20, 20, 20, .45); color: #fff; border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.pill.sound { display: inline-flex; align-items: center; gap: 6px; }
+.pill svg { width: 16px; height: 16px; }
+.slide.endslide { display: grid; place-items: center; padding: 24px; text-align: center; }
+.slide.endslide .box { display: grid; gap: 16px; justify-items: center; max-width: 320px; }
+.slide.endslide h2 { font-size: 30px; font-weight: 800; }
+.slide.endslide p { color: var(--k-ink-2); }
+.slide .loading { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,.6); font-size: 13px; pointer-events: none; }
+.slide.ready .loading { display: none; }
+
+.slide iframe { position: absolute; left: -2%; top: -7%; width: 116%; height: 116%; border: 0; display: block; background: #000; }
+.slide.embed .tapzone { background: transparent; }
+.slide.embed .shade { height: 32%; background: linear-gradient(to top, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0)); }
+.slide.passthrough .tapzone { pointer-events: none; }
+.slide.passthrough .loading, .slide.failed .loading { display: grid; background: rgba(0,0,0,.45); font-size: 15px; padding: 24px; text-align: center; align-content: end; padding-bottom: 130px; }
+.slide.passthrough.ready .loading { display: none; }
+.chip.pace-unbekannt { color: var(--ink-3); }
+
+/* ---------- admin ---------- */
+.admin { background: var(--plane); color: var(--ink); padding-bottom: 60px; }
+.admin-top {
+  position: sticky; top: 0; z-index: 5;
+  background: color-mix(in srgb, var(--plane) 86%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.admin-top .wrap { display: flex; align-items: center; gap: 18px; min-height: 58px; flex-wrap: wrap; padding-block: 6px; }
+.admin-top .brand { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -.02em; }
+.admin-top .brand i { font-style: normal; color: var(--accent); }
+.tabs { display: flex; gap: 2px; flex: 1; overflow-x: auto; scrollbar-width: none; }
+.tabs button {
+  border: 0; background: transparent; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px;
+  color: var(--ink-2); cursor: pointer; white-space: nowrap;
+}
+.tabs button:hover { background: var(--surface-2); }
+.tabs button.on { color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line-2); }
+.admin main { padding-block: 26px; }
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.section-head p { color: var(--ink-2); max-width: 62ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.card.pad { padding: 18px; }
+.notice { padding: 12px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); font-size: 13.5px; border-left: 3px solid var(--accent); }
+.notice.warn { border-left-color: var(--warn); }
+.notice b { color: var(--ink); }
+
+/* video list */
+.vlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.vcard { display: grid; grid-template-columns: 62px 1fr; gap: 12px; padding: 12px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.vcard:hover { border-color: var(--line-2); box-shadow: var(--shadow); }
+.vcard .thumb { width: 62px; aspect-ratio: 9 / 16; border-radius: 6px; background: #0a0a0a; object-fit: cover; display: block; }
+.vcard .thumb.empty { display: grid; place-items: center; color: #666; font-size: 11px; }
+.vcard .t { font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.vcard .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.vcard .stats { display: grid; grid-template-columns: repeat(3, auto); gap: 4px 14px; margin-top: 10px; font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.vcard .stats b { display: block; color: var(--ink); font-weight: 600; font-size: 14px; }
+.vcard.demo::after { content: "Beispiel"; position: absolute; }
+.vcard { position: relative; }
+.vcard .badge { position: absolute; top: 8px; right: 8px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; color: var(--ink-3); }
+.dropzone {
+  border: 1.5px dashed var(--line-2); border-radius: var(--radius); padding: 26px 18px; text-align: center;
+  display: grid; gap: 8px; justify-items: center; color: var(--ink-2); background: var(--surface); cursor: pointer;
+}
+.dropzone.over { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone b { color: var(--ink); font-weight: 600; }
+.progress { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+.upl { display: grid; gap: 8px; padding: 12px 14px; }
+.upl .n { font-weight: 600; font-size: 14px; }
+.upl .s { font-size: 12.5px; color: var(--ink-2); }
+
+/* categories */
+.catlist { display: grid; gap: 0; }
+.catrow { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.catrow:last-child { border-bottom: 0; }
+.catrow .sw { width: 14px; height: 14px; border-radius: 4px; }
+.catrow .n { font-weight: 600; }
+.catrow .c { font-size: 13px; color: var(--ink-2); }
+
+/* stats */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi { padding: 14px 16px; }
+.kpi .v { font-family: var(--font-display); font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+.kpi .l { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px; font-weight: 600; }
+.kpi .s { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.answer { padding: 18px 20px; display: grid; gap: 8px; border-left: 3px solid var(--accent); }
+.answer h3 { font-size: 18px; }
+.answer p { color: var(--ink-2); }
+.answer p b { color: var(--ink); }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 14px; }
+.chart { padding: 16px 16px 12px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.chart.wide { grid-column: 1 / -1; }
+.chart h3 { font-size: 15px; }
+.chart .sub { font-size: 12.5px; color: var(--ink-2); }
+.chart svg { width: 100%; height: auto; display: block; font-family: var(--font-body); }
+.chart svg text { fill: var(--ink-2); font-size: 12px; }
+.chart svg .lab { fill: var(--ink); font-weight: 500; }
+.chart svg .val { fill: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.chart svg .n { fill: var(--ink-3); font-weight: 400; font-size: 11px; }
+.chart .svgbox { min-height: 40px; }
+.chart svg .grid { stroke: var(--grid); stroke-width: 1; }
+.chart svg .axis { stroke: var(--axis); stroke-width: 1; }
+.chart svg .mark { transition: opacity .12s; }
+.chart svg .hit { fill: transparent; cursor: default; }
+.chart svg .hit:hover + .mark, .chart svg .hit:hover ~ .mark { opacity: .8; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.empty { padding: 34px 20px; text-align: center; color: var(--ink-2); display: grid; gap: 8px; justify-items: center; }
+.empty b { color: var(--ink); font-family: var(--font-display); font-size: 18px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.filters label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.filters input { accent-color: var(--accent); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); border-bottom: 1px solid var(--line-2); padding: 8px 10px; white-space: nowrap; font-weight: 600; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:hover td { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+.bar-in { display: inline-block; height: 8px; border-radius: 4px; background: var(--s1); vertical-align: middle; margin-right: 8px; }
+
+/* modal, toast, tooltip */
+.modal { position: fixed; inset: 0; background: rgba(8, 6, 10, .58); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.modal-box { background: var(--surface); color: var(--ink); border-radius: 14px; width: min(540px, 100%); max-height: min(92vh, 92dvh); overflow: auto; padding: 22px; box-shadow: var(--shadow); display: grid; gap: 16px; }
+.modal-box h2 { font-size: 20px; }
+.modal-box .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.modal-box .actions .left { margin-right: auto; }
+.pin-input { font-size: 28px; letter-spacing: .3em; text-align: center; font-family: var(--font-display); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--plane); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 70; box-shadow: var(--shadow); max-width: min(90vw, 480px); text-align: center; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--plane); padding: 7px 10px; border-radius: 7px; font-size: 12.5px; z-index: 60; transform: translate(-50%, calc(-100% - 12px)); white-space: nowrap; line-height: 1.4; }
+.tip b { font-weight: 600; }
+.vprev { width: 100%; aspect-ratio: 9 / 16; max-height: 300px; background: #000; border-radius: 10px; object-fit: contain; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } .end-stats { grid-template-columns: 1fr 1fr; } }
+
+/* online version */
+.start-online { display: grid; gap: 14px; justify-items: center; width: 100%; }
+.code-box { display: grid; gap: 4px; justify-items: center; padding: 12px 22px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 14px; background: rgba(255, 255, 255, .06); }
+.code-box .l { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--k-ink-2); font-weight: 600; }
+.code-box .c { font-family: var(--font-display); font-weight: 800; font-size: 34px; letter-spacing: .18em; line-height: 1; padding-left: .18em; }
+.participated { font-size: 13.5px; color: var(--k-ink-2); background: rgba(255, 61, 110, .12); border: 1px solid rgba(255, 61, 110, .35); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; justify-items: center; }
+.participated b { color: #fff; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.vcard.static { cursor: default; }
+.vcard.static:hover { box-shadow: none; border-color: var(--line); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
+
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== Start (kiosk) ===== -->
+  <section id="screen-start" class="screen kiosk">
+    <div class="kiosk-card">
+      <div class="wordmark">Feed<i>labor</i></div>
+      <p class="lead">Scroll wie in einer echten App.<br>Hör auf, wann du willst.</p>
+      <button id="btn-start" class="btn-big">Los geht's</button>
+      <p class="note" id="start-note-kiosk">Anonym, ohne Anmeldung. Oben rechts findest du jederzeit „Fertig“.</p>
+      <div id="start-online" class="start-online" hidden>
+        <div class="code-box"><span class="l">Deine anonyme Nummer</span><span class="c" id="start-code">····</span></div>
+        <p class="note">Anonym und freiwillig: Gemessen wird nur, wie lange du welche Videos schaust – kein Name, kein Login. Mit „Los geht’s“ bist du einverstanden, dass diese Daten für eine Maturaarbeit ausgewertet werden. Oben rechts findest du jederzeit „Fertig“.</p>
+        <div id="start-participated" class="participated" hidden>
+          <b>Du hast schon mitgemacht</b> (Nummer <span id="start-participated-code"></span>) – danke! Wenn du trotzdem nochmal willst, wird das als Wiederholung gezählt.
+          <button id="btn-participated-again" class="link">Trotzdem nochmal</button>
+        </div>
+      </div>
+    </div>
+    <button id="btn-admin" class="gear" aria-label="Verwaltung öffnen" title="Verwaltung">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+    <div id="start-banner" class="kiosk-banner" hidden></div>
+  </section>
+
+  <!-- ===== Feed ===== -->
+  <section id="screen-feed" class="feed-screen" hidden>
+    <div id="feed" class="feed"></div>
+    <div class="feed-top">
+      <button id="btn-sound" class="pill sound" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+        Ton an
+      </button>
+      <span></span>
+      <button id="btn-done" class="pill">Fertig</button>
+    </div>
+  </section>
+
+  <!-- ===== End (kiosk) ===== -->
+  <section id="screen-end" class="screen kiosk" hidden>
+    <div class="kiosk-card" id="end-estimate" hidden>
+      <div class="eyebrow" style="color:var(--k-ink-2)">Eine kurze Frage</div>
+      <h2 style="font-size:26px">Wie lange, schätzt du, hast du gerade gescrollt?</h2>
+      <div class="field">
+        <input type="number" id="in-estimate" inputmode="decimal" min="0" step="0.5" placeholder="Minuten">
+      </div>
+      <button id="btn-estimate" class="btn-big accent">Weiter</button>
+      <button id="btn-estimate-skip" class="link">Weiss ich nicht</button>
+    </div>
+    <div class="kiosk-card" id="end-thanks" hidden>
+      <div class="wordmark" style="font-size:34px">Danke!</div>
+      <p class="lead" id="end-lead">Deine Daten sind anonym gespeichert.</p>
+      <div class="end-stats" id="end-stats"></div>
+      <div id="end-code" class="code-box" hidden><span class="l">Deine anonyme Nummer</span><span class="c" id="end-code-value"></span></div>
+      <button id="btn-next" class="btn-big">Nächste Person</button>
+      <button id="btn-again" class="link" hidden>Nochmal von vorn</button>
+    </div>
+  </section>
+
+  <!-- ===== Admin ===== -->
+  <section id="screen-admin" class="screen admin" hidden>
+    <header class="admin-top">
+      <div class="wrap">
+        <div class="brand">Feed<i>labor</i></div>
+        <nav class="tabs" id="tabs">
+          <button data-tab="videos" class="on">Videos</button>
+          <button data-tab="cats">Kategorien</button>
+          <button data-tab="stats">Statistik</button>
+          <button data-tab="settings">Einstellungen</button>
+          <button data-tab="setup" hidden>Einrichtung</button>
+        </nav>
+        <button id="btn-tofeed" class="btn sm">Zum Feed</button>
+      </div>
+    </header>
+    <main class="wrap">
+      <!-- Videos -->
+      <div id="tab-videos" class="stack">
+        <div class="section-head">
+          <div>
+            <h2>Videos</h2>
+            <p>Jedes Video wird beim Hinzufügen automatisch vermessen: Länge, Schnitte pro Minute und Bewegungsindex. Kategorie und Bildtext legst du selbst fest.</p>
+          </div>
+          <div class="row">
+            <input type="file" id="in-files" accept="video/mp4,video/webm,.mp4,.webm,.mov" multiple hidden>
+            <button id="btn-add" class="btn primary">Video hinzufügen</button>
+          </div>
+        </div>
+        <div id="storage-note" class="notice" hidden></div>
+        <div id="dropzone" class="dropzone">
+          <b>Videodateien hierher ziehen</b>
+          <span class="small">MP4 oder WebM, bis 20 MB pro Datei. Hochformat 9:16 passt am besten.</span>
+        </div>
+        <div id="uploads" class="stack"></div>
+        <div id="vlist" class="vlist"></div>
+      </div>
+
+      <!-- Categories -->
+      <div id="tab-cats" class="stack" hidden>
+        <div class="section-head">
+          <div>
+            <h2>Kategorien</h2>
+            <p>Inhaltliche Kategorien vergibst du von Hand. Das Tempo (schnell / mittel / langsam) wird aus den Schnitten pro Minute berechnet – die Schwellen kannst du unten anpassen.</p>
+          </div>
+        </div>
+        <div class="card pad stack">
+          <h3>Inhalt</h3>
+          <div id="catlist" class="catlist"></div>
+          <div class="row">
+            <input type="text" id="in-cat" placeholder="Neue Kategorie, z. B. Humor" style="max-width:320px">
+            <button id="btn-cat-add" class="btn">Hinzufügen</button>
+          </div>
+        </div>
+        <div class="card pad stack">
+          <h3>Tempo-Schwellen</h3>
+          <p class="muted small">Schnitte pro Minute. Zum Vergleich: 60 Schnitte/min heisst, alle Sekunde ein Schnitt; klassische Filme liegen bei 15–25.</p>
+          <div class="grid2">
+            <div class="field"><label for="in-fast">„schnell“ ab … Schnitten/min</label><input type="number" id="in-fast" min="0" step="1"></div>
+            <div class="field"><label for="in-slow">„langsam“ bis … Schnitte/min</label><input type="number" id="in-slow" min="0" step="1"></div>
+          </div>
+          <div id="pace-preview" class="muted small"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div id="tab-stats" class="stack" hidden>
+        <div class="section-head">
+          <div>
+            <h2>Statistik</h2>
+            <p>Welche Videos halten die Aufmerksamkeit am längsten? Gemessen wird echte Schauzeit im Verhältnis zur Videolänge, nicht Likes.</p>
+          </div>
+          <div class="row">
+            <button id="btn-refresh" class="btn sm">Aktualisieren</button>
+            <button id="btn-csv-views" class="btn sm">CSV Ansichten</button>
+            <button id="btn-csv-sessions" class="btn sm">CSV Sessions</button>
+            <button id="btn-json" class="btn sm">JSON alles</button>
+          </div>
+        </div>
+        <div class="filters">
+          <label><input type="checkbox" id="f-first" checked> nur erste Ansicht pro Video und Person</label>
+          <label><input type="checkbox" id="f-notest" checked> Test- und Wiederholungs-Sessions ausblenden</label>
+          <label><input type="checkbox" id="f-nodemo" checked> Beispieldaten ausblenden</label>
+        </div>
+        <div id="stats-body" class="stack"></div>
+      </div>
+
+      <!-- Settings -->
+      <div id="tab-settings" class="stack" hidden>
+        <div class="section-head">
+          <div>
+            <h2>Einstellungen</h2>
+            <p>Ablauf des Experiments und Schutz der Verwaltung.</p>
+          </div>
+        </div>
+        <div class="card pad">
+          <h3>Ablauf</h3>
+          <div class="switch"><div><div class="t">Zeitschätzung am Ende abfragen</div><div class="d">„Wie lange hast du gescrollt?“ – vergleicht gefühlte mit echter Zeit.</div></div><input type="checkbox" id="s-estimate"></div>
+          <div class="switch"><div><div class="t">Feed läuft nach dem letzten Video weiter</div><div class="d">Videos kommen in neuer Zufallsreihenfolge nochmals (max. Runden unten). Sonst endet der Feed.</div></div><input type="checkbox" id="s-endless"></div>
+          <div class="switch"><div><div class="t">Maximale Runden</div><div class="d">Wie oft alle Videos höchstens gezeigt werden.</div></div><input type="number" id="s-rounds" min="1" max="10" style="width:80px"></div>
+          <div class="switch"><div><div class="t">Bildtexte anzeigen</div><div class="d">Der Bildtext jedes Videos erscheint unten links wie eine Beschreibung.</div></div><input type="checkbox" id="s-captions"></div>
+          <div class="switch"><div><div class="t">Mit Ton starten</div><div class="d">Falls der Browser den Ton blockiert, erscheint ein „Ton an“-Knopf.</div></div><input type="checkbox" id="s-sound"></div>
+          <div class="switch"><div><div class="t">Testmodus</div><div class="d">Neue Sessions werden als Test markiert und in der Statistik ausgeblendet. Zum Ausprobieren.</div></div><input type="checkbox" id="s-test"></div>
+        </div>
+        <div class="card pad stack">
+          <h3>Verwaltung schützen</h3>
+          <p class="muted small">Mit PIN kommen Teilnehmende über das Zahnrad nicht in die Verwaltung. Leer lassen = kein PIN.</p>
+          <div class="row">
+            <input type="password" id="s-pin" inputmode="numeric" placeholder="PIN (4–8 Ziffern)" style="max-width:220px" autocomplete="off">
+            <button id="btn-pin-save" class="btn">PIN speichern</button>
+          </div>
+        </div>
+        <div class="card pad stack">
+          <h3>Daten</h3>
+          <div id="storage-info" class="muted small"></div>
+          <div class="row">
+            <button id="btn-del-demo" class="btn">Beispieldaten entfernen</button>
+            <button id="btn-del-test" class="btn">Test-Sessions löschen</button>
+            <button id="btn-del-all" class="btn danger">Alle Sessions löschen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup (online version) -->
+      <div id="tab-setup" class="stack" hidden>
+        <div class="section-head">
+          <div>
+            <h2>Einrichtung</h2>
+            <p>Diese Online-Version läuft ohne Anmeldung. Die Ergebnisse werden an dein Google-Script geschickt und landen in deiner Google-Tabelle.</p>
+          </div>
+        </div>
+        <div class="card pad stack">
+          <h3>Verbindung</h3>
+          <div id="setup-status" class="muted small">Prüfe …</div>
+          <div class="row">
+            <button id="btn-setup-ping" class="btn sm">Verbindung testen</button>
+            <button id="btn-setup-testlink" class="btn sm">Test-Link kopieren</button>
+            <button id="btn-setup-logout" class="btn sm ghost">Schlüssel vergessen</button>
+          </div>
+          <p class="muted small">Zum Ausprobieren, ohne die Statistik zu verfälschen: Link mit <code>?test=1</code> öffnen. Solche Sessions werden als Test markiert.</p>
+        </div>
+        <div class="card pad stack">
+          <h3>Videos in dieser Version</h3>
+          <div id="setup-videos" class="vlist"></div>
+          <p class="muted small">Videos und Kategorien sind fest eingebaut. Zum Ändern die Dateien austauschen und die Seite neu bauen lassen.</p>
+        </div>
+        <div class="card pad stack">
+          <h3>Kategorien und Tempo-Schwellen</h3>
+          <div id="setup-config" class="muted small"></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <div id="modal" class="modal" hidden><div class="modal-box" id="modal-box"></div></div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="tip" class="tip" hidden></div>
+</div>
+
+<script>window.FL_ONLINE = {"endpoint": "", "config": {"categories": [{"id": "humor", "name": "Humor & Sketch", "slot": 0}, {"id": "wissen", "name": "Wissen & Erklärung", "slot": 1}, {"id": "emotion", "name": "Storytime & Drama", "slot": 2}, {"id": "musik", "name": "Musik & Tanz", "slot": 3}, {"id": "satisfying", "name": "Satisfying & ASMR", "slot": 5}, {"id": "sport", "name": "Sport & Gaming (optional)", "slot": 4}, {"id": "news", "name": "News & Politik", "slot": 6}], "pace": {"fastMin": 20, "slowMax": 8}, "settings": {"askEstimate": true, "endless": true, "maxRounds": 3, "showCaptions": true, "soundOn": true, "testMode": false, "pin": ""}, "pace_overrides": {"k1-01": "mittel", "k1-02": "langsam", "k1-03": "mittel", "k1-04": "schnell", "k2-01": "schnell", "k2-02": "mittel", "k2-03": "schnell", "k2-04": "mittel", "k3-01": "mittel", "k3-02": "langsam", "k3-03": "langsam", "k3-04": "langsam", "k4-01": "langsam", "k4-02": "langsam", "k4-03": "langsam", "k4-04": "langsam", "k5-01": "langsam", "k5-02": "schnell", "k5-03": "schnell", "k5-04": "schnell", "k6-01": "mittel", "k6-02": "mittel", "k6-03": "mittel", "k6-04": "mittel"}}, "videos": [{"id": "k1-01", "embedId": "7684318467079687456", "tiktokUrl": "https://www.tiktok.com/@denooo.esn/video/7684318467079687456", "title": "Präsentation in der Schule", "handle": "denooo.esn", "caption": "markiert alle eure Schatzis… #fyp #präsentation #schule", "categoryId": "humor", "paceOverride": null, "durationSec": 32, "width": 576, "height": 1024, "addedAt": 1789325824499, "demo": false, "kind": "embed", "stats": {"likes": 96100, "comments": 147, "shares": 13000, "plays": 1700000}, "music": "Originalton"}, {"id": "k1-02", "embedId": "7514357609462271254", "tiktokUrl": "https://www.tiktok.com/@jerryvsan/video/7514357609462271254", "title": "Stand-up: Studieren", "handle": "jerryvsan", "caption": "Studieren, was soll das sein hä?! Bei Joeyscomedyclub ❤️ #standupcomedy #comedy", "categoryId": "humor", "paceOverride": null, "durationSec": 24, "width": 576, "height": 1024, "addedAt": 1789325825499, "demo": false, "kind": "embed", "stats": {"likes": 31000, "comments": 152, "shares": 7439, "plays": 500800}, "music": "Originalton"}, {"id": "k1-03", "embedId": "7558429498069224726", "tiktokUrl": "https://www.tiktok.com/@abi_28_igs/video/7558429498069224726", "title": "Schultoiletten POV", "handle": "abi_28_igs", "caption": "Toiletten in unserer Schule 🚽 #fyp #schule #pov", "categoryId": "humor", "paceOverride": null, "durationSec": 11, "width": 576, "height": 1024, "addedAt": 1789325826499, "demo": false, "kind": "embed", "stats": {"likes": 12600, "comments": 71, "shares": 3379, "plays": 449200}, "music": "Originalton – German Memes"}, {"id": "k1-04", "embedId": "7664107133188787476", "tiktokUrl": "https://www.tiktok.com/@kosofunny/video/7664107133188787476", "title": "Trampolin-Fails", "handle": "kosofunny", "caption": "Ranking best trampoline fails | #funny #fyp #ranking #fail", "categoryId": "humor", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325827499, "demo": false, "kind": "embed", "stats": {"likes": 410600, "comments": 1606, "shares": 161400, "plays": 14300000}, "music": "Originalton – Kosofunny"}, {"id": "k2-01", "embedId": "7481191051483483414", "tiktokUrl": "https://www.tiktok.com/@quarks/video/7481191051483483414", "title": "Quarks: Passivrauchen", "handle": "quarks", "caption": "🚨Achtung🚨 Markiere deine Freunde! 🚬 #quarks #lernenmittiktok #passivrauchen #snus", "categoryId": "wissen", "paceOverride": null, "durationSec": 40, "width": 576, "height": 1024, "addedAt": 1789325828499, "demo": false, "kind": "embed", "stats": {"likes": 26700, "comments": 138, "shares": 7709, "plays": 561900}, "music": "Originalton"}, {"id": "k2-02", "embedId": "7523193269556104470", "tiktokUrl": "https://www.tiktok.com/@mrwissen2go/video/7523193269556104470", "title": "Max Mustermann in Europa", "handle": "mrwissen2go", "caption": "#mrwissen2go #maxmustermann #sprache #europa", "categoryId": "wissen", "paceOverride": null, "durationSec": 18, "width": 576, "height": 1024, "addedAt": 1789325829499, "demo": false, "kind": "embed", "stats": {"likes": 103300, "comments": 359, "shares": 6682, "plays": 1300000}, "music": "Originalton"}, {"id": "k2-03", "embedId": "7668982016221728032", "tiktokUrl": "https://www.tiktok.com/@funk/video/7668982016221728032", "title": "Superhelden & Paragraf 39", "handle": "funk", "caption": "Superhelden in Deutschland haben es schwer. Vorteil aber: Paragraf 39 des Bundesnaturschutzgesetzes …", "categoryId": "wissen", "paceOverride": null, "durationSec": 26, "width": 576, "height": 1024, "addedAt": 1789325830499, "demo": false, "kind": "embed", "stats": {"likes": 121100, "comments": 625, "shares": 30500, "plays": 1100000}, "music": "Originalton"}, {"id": "k2-04", "embedId": "7673232930256244001", "tiktokUrl": "https://www.tiktok.com/@niklaskolorz/video/7673232930256244001", "title": "Sonnenfinsternis", "handle": "niklaskolorz", "caption": "WAS FÜR EIN MOMENT 😍 TOTAL TOTALITY! #sonnenfinsternis", "categoryId": "wissen", "paceOverride": null, "durationSec": 33, "width": 576, "height": 1024, "addedAt": 1789325831499, "demo": false, "kind": "embed", "stats": {"likes": 42600, "comments": 399, "shares": 2225, "plays": 301800}, "music": "Originalton"}, {"id": "k3-01", "embedId": "7676512578104790305", "tiktokUrl": "https://www.tiktok.com/@ringlervids/video/7676512578104790305", "title": "Drei Brüder, drei Autos", "handle": "ringlervids", "caption": "Drei Brüder. Drei Autos. Und eine ziemlich schlechte Entscheidung #deutschtiktok #comedydeutsch", "categoryId": "emotion", "paceOverride": null, "durationSec": 52, "width": 576, "height": 1024, "addedAt": 1789325832499, "demo": false, "kind": "embed", "stats": {"likes": 36400, "comments": 49, "shares": 636, "plays": 1400000}, "music": "Trend das Frutas"}, {"id": "k3-02", "embedId": "7580315928366189846", "tiktokUrl": "https://www.tiktok.com/@ichbinjuli10/video/7580315928366189846", "title": "Meinung: „Komm doch…“", "handle": "ichbinjuli10", "caption": "Komm doch… #meinung #österreich #sprache #fyp", "categoryId": "emotion", "paceOverride": null, "durationSec": 59, "width": 576, "height": 1024, "addedAt": 1789325833499, "demo": false, "kind": "embed", "stats": {"likes": 94500, "comments": 2409, "shares": 13700, "plays": 968000}, "music": "Originalton"}, {"id": "k3-03", "embedId": "7678616666518949153", "tiktokUrl": "https://www.tiktok.com/@aileen.weibeler/video/7678616666518949153", "title": "Meinungen aushalten", "handle": "aileen.weibeler", "caption": "Wir müssen unterschiedliche Meinungen aushalten können ohne uns zu beleidigen.", "categoryId": "emotion", "paceOverride": null, "durationSec": 26, "width": 576, "height": 1024, "addedAt": 1789325834499, "demo": false, "kind": "embed", "stats": {"likes": 17900, "comments": 1483, "shares": 839, "plays": 850400}, "music": "Originalton"}, {"id": "k3-04", "embedId": "7462376454463048982", "tiktokUrl": "https://www.tiktok.com/@alain.frei/video/7462376454463048982", "title": "Sorry, das musste sein", "handle": "alain.frei", "caption": "Sorry, das musste einfach sein. 😂", "categoryId": "emotion", "paceOverride": null, "durationSec": 16, "width": 576, "height": 1024, "addedAt": 1789325835499, "demo": false, "kind": "embed", "stats": {"likes": 286900, "comments": 10600, "shares": 31800, "plays": 3900000}, "music": "Originalton"}, {"id": "k4-01", "embedId": "7681036016341372192", "tiktokUrl": "https://www.tiktok.com/@frida_tune/video/7681036016341372192", "title": "Gesangs-Cover", "handle": "frida_tune", "caption": "washing machine heart – @Mitski 🎤⭐️ #singing #cover #song", "categoryId": "musik", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1789325836499, "demo": false, "kind": "embed", "stats": {"likes": 373900, "comments": 1437, "shares": 4852, "plays": 2600000}, "music": "Originalton"}, {"id": "k4-02", "embedId": "7683455708292975894", "tiktokUrl": "https://www.tiktok.com/@dancingqueensbabe/video/7683455708292975894", "title": "Dance in der Schule", "handle": "dancingqueensbabe", "caption": "DQB IN THA HOUSE 🔥 #fyp #dance #school", "categoryId": "musik", "paceOverride": null, "durationSec": 10, "width": 576, "height": 1024, "addedAt": 1789325837499, "demo": false, "kind": "embed", "stats": {"likes": 136000, "comments": 165, "shares": 7458, "plays": 1100000}, "music": "Originalton"}, {"id": "k4-03", "embedId": "7495016131279834390", "tiktokUrl": "https://www.tiktok.com/@philschallermusic/video/7495016131279834390", "title": "Gesang: Dauerschleife", "handle": "philschallermusic", "caption": "Welchen Song hört ihr in Dauerschleife? 🎧✨ #singen #gesang", "categoryId": "musik", "paceOverride": null, "durationSec": 22, "width": 576, "height": 1024, "addedAt": 1789325838499, "demo": false, "kind": "embed", "stats": {"likes": 76400, "comments": 511, "shares": 1480, "plays": 608800}, "music": "Originalton"}, {"id": "k4-04", "embedId": "7669236167241370893", "tiktokUrl": "https://www.tiktok.com/@honestj/video/7669236167241370893", "title": "Duo-Dance", "handle": "honestj", "caption": "Don’t you tiptoe 🔥 #fyp #dance #duo", "categoryId": "musik", "paceOverride": null, "durationSec": 29, "width": 576, "height": 1024, "addedAt": 1789325839499, "demo": false, "kind": "embed", "stats": {"likes": 688300, "comments": 1813, "shares": 56500, "plays": 10200000}, "music": "Originalton"}, {"id": "k5-01", "embedId": "7636161275612908830", "tiktokUrl": "https://www.tiktok.com/@_sweetzori/video/7636161275612908830", "title": "Jelly Cake", "handle": "_sweetzori", "caption": "This one was struggle…💜 #jellycake #demolding #satisfyingvideo", "categoryId": "satisfying", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325840499, "demo": false, "kind": "embed", "stats": {"likes": 1700000, "comments": 1422, "shares": 21400, "plays": 29700000}, "music": "Originalton"}, {"id": "k5-02", "embedId": "7662383012637658401", "tiktokUrl": "https://www.tiktok.com/@lifeisfullofgoodies/video/7662383012637658401", "title": "Ofenpfannkuchen", "handle": "lifeisfullofgoodies", "caption": "Wenn’s schnell gehen muss, aber trotzdem richtig lecker sein soll: herzhafter Ofenpfannkuchen 🥞", "categoryId": "satisfying", "paceOverride": null, "durationSec": 18, "width": 576, "height": 1024, "addedAt": 1789325841499, "demo": false, "kind": "embed", "stats": {"likes": 231300, "comments": 1254, "shares": 63000, "plays": 6000000}, "music": "Originalton"}, {"id": "k5-03", "embedId": "7675795908096724256", "tiktokUrl": "https://www.tiktok.com/@lenadiore/video/7675795908096724256", "title": "Aufräumen nach Party", "handle": "lenadiore", "caption": "War noch nie ne Partymaus 🐭 #cleanup #cleantok #putzen", "categoryId": "satisfying", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325842499, "demo": false, "kind": "embed", "stats": {"likes": 61500, "comments": 1392, "shares": 11500, "plays": 1000000}, "music": "Originalton"}, {"id": "k5-04", "embedId": "7598216502822653206", "tiktokUrl": "https://www.tiktok.com/@sevali_cake/video/7598216502822653206", "title": "Himbeer-Pistazien-Törtchen", "handle": "sevali_cake", "caption": "Himbeer-Pistazien-Törtchen 🍰 Rezept in den Kommentaren #baking #cake", "categoryId": "satisfying", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1789325843499, "demo": false, "kind": "embed", "stats": {"likes": 11500, "comments": 56, "shares": 4036, "plays": 473500}, "music": "Originalton"}, {"id": "k6-01", "embedId": "7685049115553795351", "tiktokUrl": "https://www.tiktok.com/@tagesschau/video/7685049115553795351", "title": "tagesschau: Drohnen im Ukraine-Krieg", "handle": "tagesschau", "caption": "Seit Beginn des russischen Angriffskriegs gegen die Ukraine zeigt sich: Drohnen werden immer wichtiger – in der Luft, auf dem Wasser und am Boden.", "categoryId": "news", "paceOverride": null, "durationSec": 39, "width": 576, "height": 1024, "addedAt": 1789327064579, "demo": false, "kind": "embed", "stats": {"likes": 421, "comments": 10, "shares": 5, "plays": 11900}, "music": "Originalton – tagesschau"}, {"id": "k6-02", "embedId": "7684671349863779606", "tiktokUrl": "https://www.tiktok.com/@srfnews/video/7684671349863779606", "title": "SRF: Russland und der Krieg gegen die Ukraine", "handle": "srfnews", "caption": "Viele Russinnen und Russen konnten den Krieg gegen die Ukraine lange ausblenden. Das könnte sich bald ändern.", "categoryId": "news", "paceOverride": null, "durationSec": 43, "width": 576, "height": 1024, "addedAt": 1789327065579, "demo": false, "kind": "embed", "stats": {"likes": 265, "comments": 17, "shares": 3, "plays": 7860}, "music": "Originalton"}, {"id": "k6-03", "embedId": "7681316341235715361", "tiktokUrl": "https://www.tiktok.com/@zdfheute/video/7681316341235715361", "title": "ZDF heute: Massnahmen gegen Russland", "handle": "zdfheute", "caption": "Aussenminister Wadephul hat die Massnahmen gegen Russland vorgestellt – unter anderem muss das russische Konsulat in Bonn schliessen.", "categoryId": "news", "paceOverride": null, "durationSec": 58, "width": 576, "height": 1024, "addedAt": 1789327066579, "demo": false, "kind": "embed", "stats": {"likes": 67900, "comments": 2793, "shares": 9238, "plays": 1700000}, "music": "Originalton – ZDFheute"}, {"id": "k6-04", "embedId": "7684615936669764886", "tiktokUrl": "https://www.tiktok.com/@tagesschau/video/7684615936669764886", "title": "tagesschau: Drohnenangriff auf Öl-Pipeline", "handle": "tagesschau", "caption": "Nach einem Drohnen-Angriff hat Saudi-Arabien eine wichtige Öl-Pipeline abgeschaltet.", "categoryId": "news", "paceOverride": null, "durationSec": 27, "width": 576, "height": 1024, "addedAt": 1789327067579, "demo": false, "kind": "embed", "stats": {"likes": 4230, "comments": 0, "shares": 222, "plays": 146100}, "music": "Originalton – tagesschau"}]};</script>
+<script>
+'use strict';
+/* =====================================================================
+   Feedlabor – künstliche For-You-Page für ein Doomscrolling-Experiment
+   Teil 1: Hilfsfunktionen, Speicher, Feed & Messung
+   ===================================================================== */
+
+// ---------- helpers ----------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+function el(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of children.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const uid = (n = 10) => { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map(b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join(''); };
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN;
+const median = a => { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const de = n => String(n).replace('.', ',');
+const fmt = {
+  pct: v => isFinite(v) ? Math.round(v * 100) + ' %' : '–',
+  sec: v => !isFinite(v) ? '–' : v < 60 ? de(v.toFixed(1)) + ' s' : Math.floor(v / 60) + ':' + String(Math.round(v % 60)).padStart(2, '0') + ' min',
+  n1: v => isFinite(v) ? de(v.toFixed(1)) : '–',
+  n0: v => isFinite(v) ? String(Math.round(v)) : '–',
+  min: ms => { if (!isFinite(ms)) return '–'; const m = ms / 60000; return m < 1 ? Math.round(ms / 1000) + ' s' : de(m.toFixed(1)) + ' min'; },
+  date: ms => new Date(ms).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+};
+const fmtCount = n => { n = +n || 0; const t = (x, u) => (x.toFixed(1).replace(/\.0$/, '')) + u; return n >= 1e6 ? t(n / 1e6, 'M') : n >= 1e4 ? t(n / 1e3, 'K') : n >= 1e3 ? t(n / 1e3, 'K') : String(n); };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ICON = {
+  heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  comment: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.2 1.3-.8 2.5-1.7 3.5 2.1-.2 4-1 5.5-2.2.9.2 1.8.3 2.8.3 5.5 0 10-3.9 10-8.6S17.5 3 12 3z"/></svg>',
+  share: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 4l8 7-8 7v-4.2C8.7 13.8 5 15.4 2.5 19c.6-6 4.5-10.2 11.5-11V4z"/></svg>',
+  soundOn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>',
+  soundOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6M17 9l6 6"/></svg>',
+};
+
+let toastT;
+function toast(msg, ms = 2800) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms); }
+function openModal(content) {
+  const m = $('#modal'), b = $('#modal-box');
+  b.replaceChildren(content); m.hidden = false;
+  const f = b.querySelector('input,select,textarea,button'); if (f) setTimeout(() => f.focus(), 40);
+}
+function closeModal() { $('#modal').hidden = true; $('#modal-box').replaceChildren(); }
+function confirmModal({ title, text, ok = 'Löschen', danger = true }) {
+  return new Promise(res => {
+    openModal(el('div', { class: 'stack' },
+      el('h2', { text: title }),
+      el('p', { class: 'muted', text }),
+      el('div', { class: 'actions' },
+        el('button', { class: 'btn', onclick: () => { closeModal(); res(false); } }, 'Abbrechen'),
+        el('button', { class: 'btn ' + (danger ? 'danger' : 'primary'), onclick: () => { closeModal(); res(true); } }, ok))));
+  });
+}
+
+// ---------- storage (db capability with localStorage fallback) ----------
+const CAP = { db: null, assets: null, downloads: null };
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+const DEFAULT_CONFIG = () => ({
+  version: 1,
+  categories: [
+    { id: 'humor', name: 'Humor', slot: 0 },
+    { id: 'wissen', name: 'Wissen & Erklärung', slot: 1 },
+    { id: 'emotion', name: 'Drama & Emotion', slot: 2 },
+    { id: 'musik', name: 'Musik & Tanz', slot: 3 },
+    { id: 'sport', name: 'Sport & Action', slot: 4 },
+    { id: 'satisfying', name: 'Ästhetik & Satisfying', slot: 5 },
+  ],
+  pace: { fastMin: 20, slowMax: 8 },
+  settings: { askEstimate: true, endless: true, maxRounds: 3, showCaptions: true, soundOn: true, testMode: false, pin: '' },
+});
+function migrateConfig(c) {
+  const d = DEFAULT_CONFIG();
+  c = c || {};
+  c.categories = Array.isArray(c.categories) ? c.categories : d.categories;
+  c.pace = Object.assign(d.pace, c.pace || {});
+  c.settings = Object.assign(d.settings, c.settings || {});
+  return c;
+}
+// ---------- remote transport (online version: Google Apps Script endpoint) ----------
+const remote = {
+  url: '', pending: null, sending: false, failures: 0, lastError: null,
+  get enabled() { return !!this.url; },
+  async post(payload) {
+    const r = await fetch(this.url, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload), keepalive: !!payload.final });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json(); if (j && j.error) throw new Error(j.error); return j;
+  },
+  async get(params) {
+    const u = new URL(this.url); for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
+    const r = await fetch(u.toString(), { method: 'GET', mode: 'cors' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json(); if (j && j.error) throw new Error(j.error); return j;
+  },
+  // sessions are sent at most one at a time; while one is in flight the newest state waits and replaces older ones
+  save(session, final) {
+    this.pending = { session, final: !!final }; this.flush();
+  },
+  async flush() {
+    if (this.sending || !this.pending || !this.url) return;
+    const job = this.pending; this.pending = null; this.sending = true;
+    try { await this.post({ action: 'save', session: job.session, final: job.final }); this.failures = 0; this.lastError = null; }
+    catch (e) { this.failures++; this.lastError = String(e.message || e); if (!this.pending) this.pending = job; setTimeout(() => this.flush(), Math.min(30000, 1500 * this.failures)); }
+    finally { this.sending = false; if (this.pending && !this.failures) this.flush(); }
+  },
+  beacon(session) {
+    if (!this.url) return;
+    try { navigator.sendBeacon(this.url, new Blob([JSON.stringify({ action: 'save', session, final: false })], { type: 'text/plain;charset=utf-8' })); } catch (e) {}
+  },
+};
+
+const store = {
+  mode: 'local',
+  async init() {
+    if (window.FL_ONLINE) {
+      this.mode = 'remote';
+      remote.url = (window.FL_ONLINE.endpoint || '').trim();
+      try { // config.json next to the page can override the endpoint and settings without rebuilding
+        const r = await fetch('config.json?t=' + Date.now(), { cache: 'no-store' });
+        if (r.ok) { const c = await r.json(); window.FL_ONLINE.override = c; if (typeof c.endpoint === 'string') remote.url = c.endpoint.trim(); }
+      } catch (e) {}
+      return;
+    }
+    if (window.claude && typeof window.claude.use === 'function') {
+      try {
+        const [db, assets, downloads] = await Promise.all([claude.use('db'), claude.use('assets'), claude.use('downloads')]);
+        CAP.db = db; CAP.assets = assets; CAP.downloads = downloads;
+      } catch (e) { /* design for absence */ }
+    }
+    this.mode = CAP.db ? 'db' : 'local';
+  },
+  async loadConfig() {
+    if (this.mode === 'remote') {
+      const o = window.FL_ONLINE, ov = o.override || {};
+      const c = migrateConfig(Object.assign({}, o.config || {}));
+      if (ov.settings) Object.assign(c.settings, ov.settings);
+      if (ov.pace) Object.assign(c.pace, ov.pace);
+      if (Array.isArray(ov.categories)) c.categories = ov.categories;
+      c.paceOverrides = ov.pace_overrides || o.config.pace_overrides || {};
+      return c;
+    }
+    if (CAP.db) { const s = await CAP.db.doc('config/main').get(); return s.exists ? migrateConfig(s.data()) : null; }
+    const c = LS.get('fl.config', null); return c ? migrateConfig(c) : null;
+  },
+  async saveConfig(c) { if (this.mode === 'remote') return; if (CAP.db) await CAP.db.doc('config/main').set(c); else LS.set('fl.config', c); },
+  async loadVideos() {
+    if (this.mode === 'remote') { const po = (S.config && S.config.paceOverrides) || {}; return (window.FL_ONLINE.videos || []).map(v => Object.assign({}, v, po[v.id] ? { paceOverride: po[v.id] } : {})); }
+    if (CAP.db) { const q = await CAP.db.collection('videos').limit(1000).get(); return q.docs.map(d => d.data()); }
+    return Object.values(LS.get('fl.videos', {}));
+  },
+  async saveVideo(v) {
+    if (this.mode === 'remote') return;
+    const rec = Object.assign({}, v); if (rec.localKey) delete rec.sources; // object URLs are runtime-only
+    if (CAP.db) await CAP.db.doc('videos/' + v.id).set(rec); else { const m = LS.get('fl.videos', {}); m[v.id] = rec; LS.set('fl.videos', m); }
+  },
+  async deleteVideo(id) { if (this.mode === 'remote') return; if (CAP.db) await CAP.db.doc('videos/' + id).delete(); else { const m = LS.get('fl.videos', {}); delete m[id]; LS.set('fl.videos', m); } },
+  async loadSessions() {
+    if (this.mode === 'remote') {
+      if (!remote.enabled) return Object.values(LS.get('fl.sessions', {}));
+      const j = await remote.get({ action: 'list', key: S.readKey || '' });
+      return (j.sessions || []).map(x => typeof x === 'string' ? JSON.parse(x) : x);
+    }
+    if (CAP.db) { const q = await CAP.db.collection('sessions').limit(1000).get(); return q.docs.map(d => d.data()); }
+    return Object.values(LS.get('fl.sessions', {}));
+  },
+  async saveSession(s, final) {
+    if (this.mode === 'remote') {
+      const m = LS.get('fl.sessions', {}); m[s.id] = s; LS.set('fl.sessions', m); // local copy as backup
+      if (remote.enabled) remote.save(JSON.parse(JSON.stringify(s)), final);
+      return;
+    }
+    if (CAP.db) await CAP.db.doc('sessions/' + s.id).set(s); else { const m = LS.get('fl.sessions', {}); m[s.id] = s; LS.set('fl.sessions', m); }
+  },
+  async deleteSession(id) {
+    if (this.mode === 'remote') { if (remote.enabled) await remote.post({ action: 'delete', id, key: S.readKey || '' }); const m = LS.get('fl.sessions', {}); delete m[id]; LS.set('fl.sessions', m); return; }
+    if (CAP.db) await CAP.db.doc('sessions/' + id).delete(); else { const m = LS.get('fl.sessions', {}); delete m[id]; LS.set('fl.sessions', m); }
+  },
+};
+
+// ---------- state & domain helpers ----------
+const S = { config: null, videos: [], session: null, adminUnlocked: false, ready: false, readKey: '', code: '', repeat: false };
+const isOnline = () => store.mode === 'remote';
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function participantCode() { const a = new Uint8Array(4); crypto.getRandomValues(a); return [...a].map(b => CODE_ALPHABET[b % 32]).join(''); }
+const isTestLink = () => /[?&]test=1/.test(location.search);
+const playable = v => !!(v.assetId || v.embedId || (v.sources && v.sources.length));
+function videoSources(v) {
+  if (v.assetId) return [{ src: '/_blob/' + v.assetId, type: v.mime || 'video/mp4' }];
+  return v.sources || [];
+}
+function paceClass(v, cfg = S.config) {
+  if (v.paceOverride) return v.paceOverride;
+  const c = v.cutsPerMin;
+  if (!isFinite(c)) return 'unbekannt';
+  if (c >= cfg.pace.fastMin) return 'schnell';
+  if (c <= cfg.pace.slowMax) return 'langsam';
+  return 'mittel';
+}
+const PACE_LABEL = { schnell: 'schnell', mittel: 'mittel', langsam: 'langsam', unbekannt: 'nicht bestimmt' };
+const catById = id => (S.config?.categories || []).find(c => c.id === id) || null;
+const catName = id => catById(id)?.name || 'ohne Kategorie';
+const catColor = id => { const c = catById(id); return c ? `var(--s${(c.slot % 8) + 1})` : 'var(--ink-3)'; };
+function sortVideos() { S.videos.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0)); }
+
+function show(name) {
+  for (const s of ['start', 'feed', 'end', 'admin']) $('#screen-' + s).hidden = s !== name;
+  document.documentElement.style.overflow = name === 'feed' ? 'hidden' : '';
+  if (name !== 'feed' && name !== 'admin') window.scrollTo(0, 0);
+}
+
+// ---------- players: a file video or TikTok's embedded player, same interface ----------
+class FilePlayer {
+  constructor(video) { this.v = video; this.kind = 'file'; }
+  get currentTime() { return this.v.currentTime || 0; }
+  get duration() { return isFinite(this.v.duration) && this.v.duration ? this.v.duration : 0; }
+  get paused() { return this.v.paused; }
+  get playing() { return !this.v.paused && !this.v.ended && this.v.readyState >= 3; }
+  get ready() { return this.v.readyState >= 2; }
+  play() { const p = this.v.play(); return p && p.catch ? p : Promise.resolve(); }
+  pause() { this.v.pause(); }
+  seek0() { try { this.v.currentTime = 0; } catch (e) {} }
+  setMuted(m) { this.v.muted = m; }
+  get muted() { return this.v.muted; }
+  preload(v) { this.v.preload = v; }
+}
+// TikTok Embed Player (https://www.tiktok.com/player/v1/<id>) driven over postMessage.
+class EmbedPlayer {
+  constructor(iframe, src, onEvent) {
+    this.f = iframe; this.src = src; this.kind = 'embed'; this.loaded = false; this.state = -1; this.ct = 0; this.dur = 0; this.ctAt = 0; this.readyFlag = false; this.mutedFlag = null; this.onEvent = onEvent; this.wantPlay = false; this.wantMuted = true; this.err = null;
+  }
+  load() {
+    if (this.loaded) return; this.loaded = true; this.f.src = this.src;
+    setTimeout(() => { if (this.loaded && !this.readyFlag && this.onEvent) this.onEvent('timeout'); }, 8000);
+  }
+  unload() { if (!this.loaded) return; this.loaded = false; this.readyFlag = false; this.state = -1; this.ct = 0; this.dur = 0; this.f.src = 'about:blank'; }
+  handle(d) {
+    const t = d.type, v = d.value;
+    if (t === 'onPlayerReady') { this.readyFlag = true; if (this.wantPlay) this.play(); this.setMuted(this.wantMuted); }
+    else if (t === 'onStateChange') { this.state = +v; if (!this.readyFlag && this.state >= 0) { this.readyFlag = true; if (this.onEvent) this.onEvent('onPlayerReady'); } }
+    else if (t === 'onCurrentTime') { const c = v && typeof v === 'object' ? v : { currentTime: +v }; if (isFinite(c.currentTime)) { this.ct = c.currentTime; this.ctAt = performance.now(); } if (c.duration) this.dur = c.duration; }
+    else if (t === 'onMute') { this.mutedFlag = !!v; }
+    else if (t === 'onError') { this.err = v; }
+    if (this.onEvent) this.onEvent(t, v);
+  }
+  post(type, value) { try { this.f.contentWindow.postMessage(Object.assign({ 'x-tiktok-player': true, type }, value === undefined ? {} : { value }), EMBED_ORIGIN); } catch (e) {} }
+  get currentTime() { return this.state === 1 ? this.ct + (performance.now() - this.ctAt) / 1000 : this.ct; }
+  get duration() { return this.dur || 0; }
+  get paused() { return this.state !== 1 && this.state !== 3; }
+  get playing() { return this.state === 1; }
+  get ready() { return this.readyFlag; }
+  play() { this.wantPlay = true; this.load(); if (this.readyFlag) this.post('play'); return Promise.resolve(); }
+  pause() { this.wantPlay = false; if (this.readyFlag) this.post('pause'); }
+  seek0() { if (this.readyFlag) this.post('seekTo', 0); this.ct = 0; this.ctAt = performance.now(); }
+  setMuted(m) { this.wantMuted = m; if (this.readyFlag) this.post(m ? 'mute' : 'unMute'); }
+  get muted() { return this.mutedFlag == null ? this.wantMuted : this.mutedFlag; }
+  preload(v) { if (v === 'none') this.unload(); else this.load(); }
+}
+const EMBED_BASE = (window.FL_ONLINE && window.FL_ONLINE.embedBase) || 'https://www.tiktok.com/player/v1/';
+const EMBED_ORIGIN = new URL(EMBED_BASE, location.href).origin;
+const EMBED_PARAMS = 'controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&loop=1&autoplay=1&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
+
+// ---------- feed engine ----------
+const feed = {
+  slides: [], active: -1, view: null, raf: 0, lastTick: 0, soundOn: true, roundsBuilt: 0, observer: null, saveT: null, msgBound: false,
+
+  start() {
+    const vids = S.videos.filter(playable);
+    if (!vids.length) { toast('Noch keine Videos vorhanden – über das Zahnrad hinzufügen.'); return; }
+    S.session = {
+      id: uid(12), startedAt: Date.now(), lastSeenAt: Date.now(), endedAt: null, durationMs: null,
+      status: 'running', endedBy: null, order: [], views: [], estimateMin: null, rounds: 0,
+      test: !!S.config.settings.testMode || isTestLink(), demo: false,
+      code: S.code || '', repeat: !!S.repeat, online: isOnline(),
+      device: { w: innerWidth, h: innerHeight, dpr: devicePixelRatio || 1, ua: navigator.userAgent.slice(0, 140) },
+    };
+    this.slides = []; this.active = -1; this.view = null; this.roundsBuilt = 0;
+    this.soundOn = !!S.config.settings.soundOn;
+    $('#btn-sound').hidden = true;
+    const f = $('#feed'); f.replaceChildren(); f.scrollTop = 0;
+    this.observer = new IntersectionObserver(entries => {
+      for (const e of entries) if (e.isIntersecting && e.intersectionRatio >= 0.6) this.activate(+e.target.dataset.i);
+    }, { root: f, threshold: [0.6] });
+    if (!this.msgBound) {
+      this.msgBound = true;
+      window.addEventListener('message', ev => {
+        if (ev.origin !== EMBED_ORIGIN || !ev.data || !ev.data['x-tiktok-player']) return;
+        const s = this.slides.find(x => x.p && x.p.kind === 'embed' && x.p.f.contentWindow === ev.source);
+        if (s) s.p.handle(ev.data);
+      });
+    }
+    this.addRound();
+    show('feed');
+    store.saveSession(S.session).catch(() => {});
+    this.lastTick = performance.now();
+    cancelAnimationFrame(this.raf);
+    this.raf = requestAnimationFrame(t => this.tick(t));
+    this.prime();
+  },
+
+  // iOS lets a media element play with sound only if it was once started from a user gesture,
+  // so on every gesture we briefly start (muted) the next few file videos and pause them again.
+  prime() {
+    if (!S.session || S.session.status !== 'running') return;
+    const from = Math.max(0, this.active), to = Math.min(this.slides.length - 1, from + 4);
+    for (let i = from; i <= to; i++) {
+      const s = this.slides[i]; if (!s.p || s.p.kind !== 'file' || s.primed) continue;
+      s.primed = true; if (i === this.active) continue;
+      const v = s.p.v; v.muted = true;
+      const p = v.play();
+      if (p && p.then) p.then(() => { if (this.active !== i) { v.pause(); try { v.currentTime = 0; } catch (e) {} } v.muted = !this.soundOn; }).catch(() => { v.muted = !this.soundOn; });
+    }
+  },
+
+  addRound() {
+    const vids = S.videos.filter(playable);
+    const order = shuffle(vids.map(v => v.id));
+    const last = this.slides[this.slides.length - 1];
+    if (last && order.length > 1 && order[0] === last.videoId) order.push(order.shift());
+    this.roundsBuilt++;
+    S.session.rounds = this.roundsBuilt;
+    if (this.roundsBuilt === 1) S.session.order = order.slice();
+    for (const id of order) this.addSlide(id, this.roundsBuilt);
+  },
+
+  addSlide(videoId, round) {
+    const v = S.videos.find(x => x.id === videoId);
+    const i = this.slides.length;
+    const landscape = v.width && v.height && v.width > v.height;
+    const slide = el('div', { class: 'slide' + (landscape ? ' fit-contain' : '') + (v.embedId ? ' embed' : ''), 'data-i': i });
+    let media, player;
+    if (v.embedId) {
+      const src = EMBED_BASE + encodeURIComponent(v.embedId) + (EMBED_BASE.includes('?') ? '&' : '?') + EMBED_PARAMS;
+      media = el('iframe', { allow: 'autoplay; fullscreen; encrypted-media; picture-in-picture', allowfullscreen: true, title: v.title || 'Video', referrerpolicy: 'strict-origin-when-cross-origin' });
+      player = new EmbedPlayer(media, src, (t, val) => {
+        if (t === 'onPlayerReady') { slide.classList.add('ready'); slide.classList.remove('passthrough'); if (this.active === i) { player.setMuted(!this.soundOn); player.seek0(); player.play(); } else { player.setMuted(true); player.pause(); } }
+        if (t === 'onStateChange' && +val === 0 && this.active === i) { if (this.view && this.view.i === i) this.view.loops++; player.seek0(); player.play(); }
+        if (t === 'onError') { slide.classList.add('failed'); slide.querySelector('.loading').textContent = 'Dieses Video kann nicht geladen werden – einfach weiterwischen.'; }
+        if (t === 'onMute' && val && this.soundOn && this.active === i) $('#btn-sound').hidden = false;
+        // no "ready" after 8 s: let taps through to TikTok's own player (consent dialog, play button)
+        if (t === 'timeout' && !slide.classList.contains('failed')) { slide.classList.add('passthrough'); slide.querySelector('.loading').textContent = 'Tippe auf das Video, um es zu starten.'; }
+      });
+      if (i < 3) player.load();
+    } else {
+      media = el('video', { playsinline: true, 'webkit-playsinline': true, preload: i < 2 ? 'auto' : 'metadata', disablepictureinpicture: true, 'disableremoteplayback': true });
+      media.muted = !this.soundOn;
+      for (const src of videoSources(v)) media.append(el('source', { src: src.src, type: src.type }));
+      player = new FilePlayer(media);
+      media.addEventListener('ended', () => { if (this.view && this.view.i === i) this.view.loops++; if (this.active === i) { media.currentTime = 0; media.play().catch(() => {}); } });
+      media.addEventListener('canplay', () => slide.classList.add('ready'));
+      media.addEventListener('loadedmetadata', () => { if (!v.durationSec && isFinite(media.duration)) v.durationSec = media.duration; });
+    }
+    const tap = el('div', { class: 'tapzone', role: 'button', 'aria-label': 'Video pausieren oder fortsetzen' });
+    const paused = el('div', { class: 'paused-icon', html: ICON.play });
+    const burst = el('div', { class: 'heart-burst', html: ICON.heart });
+    const st = v.stats || {};
+    const cnt = (n, key) => n == null ? null : el('span', { class: 'rc', 'data-key': key, text: fmtCount(n) });
+    const likeBtn = el('button', { class: 'like', 'aria-label': 'Gefällt mir', html: ICON.heart });
+    const cmtBtn = el('button', { class: 'cmt', 'aria-label': 'Kommentare', html: ICON.comment });
+    const shareBtn = el('button', { class: 'shr', 'aria-label': 'Teilen', html: ICON.share });
+    const soundBtn = el('button', { class: 'snd', 'aria-label': 'Ton ein/aus', html: this.soundOn ? ICON.soundOn : ICON.soundOff });
+    const likeCount = cnt(st.likes, 'likes');
+    const rail = el('div', { class: 'rail' },
+      el('div', { class: 'ri' }, likeBtn, likeCount),
+      el('div', { class: 'ri' }, cmtBtn, cnt(st.comments, 'comments')),
+      el('div', { class: 'ri' }, shareBtn, cnt(st.shares, 'shares')),
+      el('div', { class: 'ri' }, soundBtn));
+    const cap = el('div', { class: 'cap' });
+    if (S.config.settings.showCaptions && ((v.caption || '').trim() || v.embedId)) {
+      cap.append(el('div', { class: 'h', text: '@' + (v.handle || 'feedlabor') }));
+      if ((v.caption || '').trim()) cap.append(el('div', { class: 'c', text: v.caption }));
+      if (v.music) cap.append(el('div', { class: 'm', text: '♫ ' + v.music + ' · ' + (v.handle || '') }));
+    }
+    const prog = el('div', { class: 'prog' }, el('i'));
+    slide.append(media, el('div', { class: 'shade' }), el('div', { class: 'loading', text: 'Lädt …' }), tap, paused, burst, rail, cap, prog);
+    const S_ = { videoId, round, el: slide, p: player, prog: prog.firstChild, likeBtn, likeCount, baseLikes: st.likes, soundBtn, burst, liked: false, end: false };
+    this.slides.push(S_);
+
+    let clickT = null;
+    tap.addEventListener('click', () => {
+      if (clickT) { clearTimeout(clickT); clickT = null; this.like(i, true); }
+      else clickT = setTimeout(() => { clickT = null; this.togglePause(i); }, 240);
+    });
+    likeBtn.addEventListener('click', () => { this.like(i, false); this.prime(); });
+    soundBtn.addEventListener('click', () => this.setSound(!this.soundOn));
+    cmtBtn.addEventListener('click', () => { if (this.view && this.view.i === i) this.view.commentTaps = (this.view.commentTaps || 0) + 1; toast('Kommentare sind in dieser Studie ausgeschaltet.'); this.prime(); });
+    shareBtn.addEventListener('click', () => { if (this.view && this.view.i === i) this.view.shareTaps = (this.view.shareTaps || 0) + 1; toast('Teilen ist in dieser Studie ausgeschaltet.'); this.prime(); });
+    $('#feed').append(slide);
+    this.observer.observe(slide);
+  },
+
+  addEndSlide() {
+    const i = this.slides.length;
+    const slide = el('div', { class: 'slide endslide', 'data-i': i },
+      el('div', { class: 'box' },
+        el('h2', { text: 'Das war’s.' }),
+        el('p', { text: 'Du hast alle Videos gesehen. Tipp auf „Fertig“, um abzuschliessen.' }),
+        el('button', { class: 'btn-big', onclick: () => this.done() }, 'Fertig')));
+    this.slides.push({ videoId: null, round: 0, el: slide, p: null, end: true });
+    $('#feed').append(slide);
+    this.observer.observe(slide);
+  },
+
+  activate(i) {
+    if (i === this.active) return;
+    const prev = this.slides[this.active];
+    if (prev) { this.closeView(); if (prev.p) { prev.p.pause(); prev.el.classList.remove('paused'); } }
+    this.active = i;
+    const s = this.slides[i];
+    if (!s || s.end) return;
+    const v = S.videos.find(x => x.id === s.videoId) || {};
+    this.view = {
+      videoId: s.videoId, i, round: s.round,
+      revisit: S.session.views.some(x => x.videoId === s.videoId),
+      t0: Date.now() - S.session.startedAt, dwellStart: performance.now(),
+      dwellMs: 0, watchMs: 0, loops: 0, maxPos: 0, exitPos: 0, completed: false,
+      liked: !!s.liked, pauses: 0, commentTaps: 0, shareTaps: 0, durationSec: v.durationSec || 0, sound: this.soundOn, kind: s.p.kind,
+    };
+    s.el.classList.remove('paused');
+    s.p.seek0();
+    this.playActive();
+    for (const k of [i + 1, i + 2, i - 1]) { const n = this.slides[k]; if (n && n.p) n.p.preload('auto'); }
+    for (const k of [i - 3, i + 4]) { const f = this.slides[k]; if (f && f.p && f.p.kind === 'embed') f.p.preload('none'); }
+    const far = this.slides[i - 3]; if (far && far.p && far.p.kind === 'file') far.p.preload('none');
+    if (!this.slides.some(x => x.end) && i >= this.slides.length - 3) {
+      const st = S.config.settings;
+      if (st.endless && this.roundsBuilt < (st.maxRounds || 3)) this.addRound(); else this.addEndSlide();
+    }
+  },
+
+  playActive() {
+    const s = this.slides[this.active]; if (!s || !s.p) return;
+    const p = s.p; p.setMuted(!this.soundOn);
+    p.play().catch(() => {
+      if (this.soundOn) { // browser blocked sound: fall back to muted and offer a button
+        this.setSound(false, true);
+        p.play().catch(() => {});
+        $('#btn-sound').hidden = false;
+      }
+    });
+  },
+
+  setSound(on, silent) {
+    this.soundOn = on;
+    for (const s of this.slides) { if (s.p) s.p.setMuted(!on); if (s.soundBtn) s.soundBtn.innerHTML = on ? ICON.soundOn : ICON.soundOff; }
+    if (on) $('#btn-sound').hidden = true;
+    if (this.view) this.view.sound = on;
+    if (!silent && on) { const s = this.slides[this.active]; if (s && s.p && s.p.paused && !s.el.classList.contains('paused')) s.p.play().catch(() => {}); }
+  },
+
+  togglePause(i) {
+    const s = this.slides[i]; if (!s || !s.p) return;
+    if (s.p.paused) { s.el.classList.remove('paused'); s.p.play().catch(() => {}); }
+    else { s.p.pause(); s.el.classList.add('paused'); if (this.view && this.view.i === i) this.view.pauses++; }
+  },
+
+  like(i, burst) {
+    const s = this.slides[i]; if (!s || !s.p) return;
+    const on = burst ? true : !s.liked;
+    if (burst) { s.burst.classList.remove('go'); void s.burst.offsetWidth; s.burst.classList.add('go'); }
+    s.liked = on; s.likeBtn.classList.toggle('on', on);
+    if (s.likeCount && s.baseLikes != null) s.likeCount.textContent = fmtCount(s.baseLikes + (on ? 1 : 0));
+    if (this.view && this.view.i === i) this.view.liked = on;
+    else { const vw = S.session.views.find(x => x.i === i); if (vw) { vw.liked = on; this.saveSoon(); } }
+  },
+
+  closeView() {
+    const vw = this.view; if (!vw) return;
+    const s = this.slides[vw.i]; const p = s.p;
+    vw.dwellMs = Math.round(performance.now() - vw.dwellStart); delete vw.dwellStart;
+    const ct = p.currentTime || 0;
+    vw.exitPos = +ct.toFixed(2);
+    vw.maxPos = +Math.max(vw.maxPos, ct).toFixed(2);
+    vw.watchMs = Math.round(vw.watchMs);
+    const d = p.duration || vw.durationSec || 0;
+    vw.durationSec = +d.toFixed(2);
+    vw.completed = vw.loops > 0 || (d > 0 && vw.maxPos >= d - 0.35);
+    vw.liked = !!s.liked;
+    if (p.kind === 'embed' && !p.ready) vw.failed = true;
+    S.session.views.push(vw);
+    this.view = null;
+    S.session.lastSeenAt = Date.now();
+    this.saveSoon();
+  },
+
+  tick(now) {
+    const dt = Math.min(now - this.lastTick, 120); this.lastTick = now;
+    const vw = this.view;
+    if (vw) {
+      const s = this.slides[vw.i]; const p = s.p;
+      if (p.playing && document.visibilityState === 'visible') vw.watchMs += dt;
+      const ct = p.currentTime;
+      if (p.kind === 'embed' && vw.lastCt != null && ct < vw.lastCt - 1 && vw.lastCt > (p.duration || 999) - 1.5) vw.loops++; // player looped on its own
+      vw.lastCt = ct;
+      if (ct > vw.maxPos) vw.maxPos = ct;
+      const d = p.duration || vw.durationSec;
+      s.prog.style.width = d ? (clamp(ct / d, 0, 1) * 100).toFixed(2) + '%' : '0%';
+    }
+    this.raf = requestAnimationFrame(t => this.tick(t));
+  },
+
+  saveSoon() { clearTimeout(this.saveT); this.saveT = setTimeout(() => this.saveNow(), isOnline() ? 6000 : 500); },
+  saveNow() { clearTimeout(this.saveT); if (S.session) { S.session.lastSeenAt = Date.now(); store.saveSession(S.session).catch(() => {}); } },
+
+  stop() {
+    cancelAnimationFrame(this.raf);
+    if (this.observer) this.observer.disconnect();
+    for (const s of this.slides) if (s.p) { s.p.pause(); }
+  },
+
+  async done() {
+    if (!S.session || S.session.status !== 'running') return;
+    this.closeView(); this.stop();
+    const ss = S.session;
+    ss.status = 'ended'; ss.endedBy = 'done'; ss.endedAt = Date.now(); ss.lastSeenAt = ss.endedAt;
+    ss.durationMs = ss.endedAt - ss.startedAt; ss.soundOn = this.soundOn;
+    clearTimeout(this.saveT);
+    store.saveSession(ss, true).catch(() => toast('Speichern fehlgeschlagen – Verbindung prüfen.'));
+    if (isOnline() && !ss.test) LS.set('fl.participated', { code: ss.code, at: ss.endedAt });
+    show('end');
+    if (S.config.settings.askEstimate) { $('#in-estimate').value = ''; $('#end-estimate').hidden = false; $('#end-thanks').hidden = true; setTimeout(() => $('#in-estimate').focus(), 80); }
+    else this.thanks();
+  },
+
+  thanks() {
+    const ss = S.session;
+    $('#end-estimate').hidden = true; $('#end-thanks').hidden = false;
+    const first = ss.views.filter(v => !v.revisit && v.round === 1);
+    const stats = [
+      ['Videos', String(ss.views.length)],
+      ['gescrollt', fmt.min(ss.durationMs)],
+    ];
+    if (ss.estimateMin != null) stats.push(['geschätzt', de(ss.estimateMin) + ' min']);
+    if (first.length) { const longest = first.slice().sort((a, b) => b.watchMs - a.watchMs)[0]; stats.push(['längstes Video', fmt.sec(longest.watchMs / 1000)]); }
+    $('#end-stats').replaceChildren(...stats.map(([l, v]) => el('div', {}, el('div', { class: 'v', text: v }), el('div', { class: 'l', text: l }))));
+    const online = isOnline();
+    $('#end-code').hidden = !online; if (online) $('#end-code-value').textContent = ss.code || '–';
+    $('#end-lead').textContent = online ? 'Deine Daten sind anonym gespeichert. Du kannst die Seite jetzt schliessen.' : 'Deine Daten sind anonym gespeichert.';
+    $('#btn-next').hidden = online; $('#btn-again').hidden = !online;
+    if (online && !ss.test) { S.code = participantCode(); S.repeat = true; }
+  },
+
+  reset() {
+    this.stop();
+    $('#feed').replaceChildren();
+    this.slides = []; this.view = null; this.active = -1; S.session = null;
+    show('start');
+  },
+};
+
+// ---------- kiosk wiring ----------
+function updateStartBanner() {
+  const b = $('#start-banner');
+  const n = S.videos.filter(playable).length;
+  const parts = [];
+  const online = isOnline();
+  if (!n) parts.push(online ? '<b>Noch keine Videos eingerichtet.</b>' : '<b>Noch keine Videos.</b> Über das Zahnrad oben rechts fügst du welche hinzu.');
+  else if (S.config.settings.testMode || isTestLink()) parts.push('<b>Testmodus</b> – diese Session wird in der Statistik ausgeblendet.');
+  if (store.mode === 'local') parts.push('Lokaler Modus: Daten bleiben nur auf diesem Gerät.');
+  if (online && !remote.enabled) parts.push('<b>Noch kein Speicherort eingerichtet</b> – Ergebnisse bleiben nur auf diesem Gerät.');
+  b.innerHTML = parts.join(' · ');
+  b.hidden = !parts.length;
+  $('#btn-start').disabled = !n;
+  // online: anonymous participant number, consent line, one-per-device notice
+  $('#start-online').hidden = !online;
+  $('#start-note-kiosk').hidden = online;
+  if (online) {
+    const done = LS.get('fl.participated', null);
+    if (done && !S.repeat && !isTestLink()) {
+      S.repeat = true;
+      $('#start-participated').hidden = false;
+      $('#start-participated-code').textContent = done.code || '';
+    }
+    $('#start-code').textContent = S.code;
+  }
+}
+
+async function askPin(pin) {
+  return new Promise(res => {
+    const inp = el('input', { type: 'password', class: 'pin-input', inputmode: 'numeric', autocomplete: 'off', placeholder: '••••', id: 'pin-field' });
+    const err = el('p', { class: 'small', style: 'color:var(--crit)', hidden: true, text: 'Falscher PIN.' });
+    const check = () => { if (inp.value === pin) { closeModal(); res(true); } else { err.hidden = false; inp.value = ''; inp.focus(); } };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    openModal(el('div', { class: 'stack' },
+      el('h2', { text: 'Verwaltung' }),
+      el('p', { class: 'muted small', text: 'PIN eingeben, um Videos und Statistik zu öffnen.' }),
+      inp, err,
+      el('div', { class: 'actions' },
+        el('button', { class: 'btn', onclick: () => { closeModal(); res(false); } }, 'Abbrechen'),
+        el('button', { class: 'btn primary', onclick: check }, 'Öffnen'))));
+  });
+}
+async function askKey() {
+  return new Promise(res => {
+    const inp = el('input', { type: 'password', class: 'pin-input', autocomplete: 'off', placeholder: '••••', id: 'key-field' });
+    const err = el('p', { class: 'small', style: 'color:var(--crit)', hidden: true, text: '' });
+    const btn = el('button', { class: 'btn primary' }, 'Öffnen');
+    const check = async () => {
+      const key = inp.value.trim(); if (!key) return;
+      btn.disabled = true; err.hidden = true;
+      try { S.readKey = key; await remote.get({ action: 'list', key, limit: 1 }); try { sessionStorage.setItem('fl.key', key); } catch (e) {} closeModal(); res(true); }
+      catch (e) { S.readKey = ''; err.textContent = /key|schl/i.test(String(e.message)) ? 'Falscher Schlüssel.' : 'Verbindung fehlgeschlagen: ' + (e.message || e); err.hidden = false; btn.disabled = false; }
+    };
+    btn.addEventListener('click', check);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    openModal(el('div', { class: 'stack' },
+      el('h2', { text: 'Auswertung' }),
+      el('p', { class: 'muted small', text: 'Schlüssel eingeben (der READ_KEY aus deinem Google-Script).' }),
+      inp, err,
+      el('div', { class: 'actions' }, el('button', { class: 'btn', onclick: () => { closeModal(); res(false); } }, 'Abbrechen'), btn)));
+  });
+}
+async function openAdmin(tab) {
+  if (!S.ready) return;
+  if (isOnline()) {
+    if (remote.enabled && !S.adminUnlocked) {
+      let key = ''; try { key = sessionStorage.getItem('fl.key') || ''; } catch (e) {}
+      let ok = false;
+      if (key) { S.readKey = key; try { await remote.get({ action: 'list', key, limit: 1 }); ok = true; } catch (e) { S.readKey = ''; } }
+      if (!ok) { ok = await askKey(); if (!ok) return; }
+    }
+    S.adminUnlocked = true; show('admin'); admin.open(tab || 'stats'); return;
+  }
+  const pin = S.config.settings.pin;
+  if (pin && !S.adminUnlocked) { const ok = await askPin(pin); if (!ok) return; }
+  S.adminUnlocked = true;
+  show('admin');
+  admin.open(tab);
+}
+
+function bindKiosk() {
+  $('#btn-start').addEventListener('click', () => feed.start());
+  $('#btn-admin').addEventListener('click', () => openAdmin());
+  $('#btn-done').addEventListener('click', () => feed.done());
+  $('#btn-sound').addEventListener('click', () => feed.setSound(true));
+  $('#btn-estimate').addEventListener('click', () => {
+    const v = parseFloat(String($('#in-estimate').value).replace(',', '.'));
+    if (S.session) { S.session.estimateMin = isFinite(v) && v >= 0 ? v : null; store.saveSession(S.session).catch(() => {}); }
+    feed.thanks();
+  });
+  $('#in-estimate').addEventListener('keydown', e => { if (e.key === 'Enter') $('#btn-estimate').click(); });
+  $('#btn-estimate-skip').addEventListener('click', () => { if (S.session) { S.session.estimateMin = null; store.saveSession(S.session).catch(() => {}); } feed.thanks(); });
+  $('#btn-next').addEventListener('click', () => feed.reset());
+  $('#btn-again').addEventListener('click', () => { feed.reset(); updateStartBanner(); });
+  $('#btn-participated-again').addEventListener('click', () => { $('#start-participated').hidden = true; });
+  $('#feed').addEventListener('touchend', () => feed.prime(), { passive: true });
+  $('#feed').addEventListener('pointerup', () => feed.prime());
+  $('#modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+  document.addEventListener('visibilitychange', () => {
+    if (!S.session || S.session.status !== 'running') return;
+    const s = feed.slides[feed.active];
+    if (document.hidden) { if (s && s.p) s.p.pause(); feed.saveNow(); }
+    else if (s && s.p && !s.el.classList.contains('paused')) s.p.play().catch(() => {});
+  });
+  window.addEventListener('pagehide', () => { if (S.session && S.session.status === 'running') { S.session.lastSeenAt = Date.now(); if (isOnline()) remote.beacon(S.session); else feed.saveNow(); } });
+  // keyboard scrolling for desktop testing
+  document.addEventListener('keydown', e => {
+    if ($('#screen-feed').hidden || !$('#modal').hidden) return;
+    const f = $('#feed');
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); f.scrollBy({ top: f.clientHeight, behavior: 'smooth' }); }
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); f.scrollBy({ top: -f.clientHeight, behavior: 'smooth' }); }
+    if (e.key === ' ') { e.preventDefault(); feed.togglePause(feed.active); }
+  });
+}
+
+async function boot() {
+  bindKiosk();
+  show('start');
+  $('#btn-start').disabled = true;
+  $('#btn-start').textContent = 'Lädt …';
+  await store.init();
+  let cfg = null;
+  try { cfg = await store.loadConfig(); } catch (e) {}
+  if (!cfg) { cfg = DEFAULT_CONFIG(); store.saveConfig(cfg).catch(() => {}); }
+  S.config = cfg;
+  try { S.videos = await store.loadVideos(); } catch (e) { S.videos = []; }
+  if (store.mode === 'local') await hydrateLocalVideos();
+  sortVideos();
+  S.ready = true;
+  if (isOnline()) { S.code = participantCode(); document.documentElement.classList.add('online'); }
+  $('#btn-start').textContent = 'Los geht’s';
+  updateStartBanner();
+  admin.bind();
+  if (location.hash === '#admin') openAdmin();
+  window.addEventListener('hashchange', () => { if (location.hash === '#admin' && $('#screen-admin').hidden) openAdmin(); });
+}
+
+/* =====================================================================
+   Teil 2: Videoanalyse im Browser (Schnitte/min, Bewegungsindex, Thumbnail)
+   und IndexedDB-Ablage für den lokalen Modus
+   ===================================================================== */
+
+// Plays the video muted at 2× and samples a 48px-wide greyscale frame every 0.1 s of media time.
+// A cut = a spike in the mean absolute difference between consecutive samples.
+// Motion index = mean difference of the non-cut samples (0 = still image, 30+ = very restless).
+async function analyzeVideo(source, onProgress = () => {}) {
+  const isBlob = source instanceof Blob;
+  const url = isBlob ? URL.createObjectURL(source) : source;
+  const v = document.createElement('video');
+  v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto';
+  v.setAttribute('playsinline', ''); v.setAttribute('muted', '');
+  Object.assign(v.style, { position: 'fixed', width: '4px', height: '4px', opacity: '0.01', pointerEvents: 'none', left: '0', top: '0', zIndex: '-1' });
+  document.body.append(v);
+  const cleanup = () => { try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {} v.remove(); if (isBlob) URL.revokeObjectURL(url); };
+  try {
+    v.src = url;
+    await new Promise((res, rej) => {
+      const t = setTimeout(() => rej(new Error('Zeitüberschreitung beim Laden der Datei')), 30000);
+      v.addEventListener('loadedmetadata', () => { clearTimeout(t); res(); }, { once: true });
+      v.addEventListener('error', () => { clearTimeout(t); rej(new Error('Dieses Video kann der Browser nicht lesen (Format?)')); }, { once: true });
+    });
+    const duration = v.duration, W = v.videoWidth, H = v.videoHeight;
+    if (!isFinite(duration) || duration <= 0) throw new Error('Videolänge unbekannt');
+    if (!W || !H) throw new Error('Keine Bildspur gefunden');
+    const cw = 48, ch = Math.max(8, Math.round(cw * H / W));
+    const canvas = document.createElement('canvas'); canvas.width = cw; canvas.height = ch;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const diffs = [];
+    let last = null, lastT = -1, thumb = null;
+    const step = 0.1;
+    const sample = t => {
+      ctx.drawImage(v, 0, 0, cw, ch);
+      const px = ctx.getImageData(0, 0, cw, ch).data;
+      const g = new Float32Array(cw * ch);
+      for (let i = 0, j = 0; i < px.length; i += 4, j++) g[j] = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+      if (last) { let s = 0; for (let j = 0; j < g.length; j++) s += Math.abs(g[j] - last[j]); diffs.push({ t, d: s / g.length }); }
+      last = g; lastT = t;
+      if (!thumb && t >= Math.min(1, duration / 2)) thumb = grabThumb(v);
+      onProgress(clamp(t / duration, 0, 1));
+    };
+    try { v.playbackRate = 2; } catch (e) {}
+    const useRVFC = typeof v.requestVideoFrameCallback === 'function';
+    await new Promise((res, rej) => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; clearTimeout(timeout); res(); } };
+      const fail = err => { if (!done) { done = true; clearTimeout(timeout); rej(err); } };
+      const timeout = setTimeout(() => fail(new Error('Analyse abgebrochen – das Video spielt zu langsam ab')), (duration + 40) * 1000);
+      v.addEventListener('ended', finish, { once: true });
+      v.addEventListener('error', () => fail(new Error('Fehler beim Abspielen')), { once: true });
+      const loop = (now, meta) => {
+        if (done) return;
+        if (v.ended) { finish(); return; }
+        const t = meta ? meta.mediaTime : v.currentTime;
+        if (t - lastT >= step - 0.005) { try { sample(t); } catch (e) { fail(e); return; } }
+        if (useRVFC) v.requestVideoFrameCallback(loop); else requestAnimationFrame(loop);
+      };
+      try { v.currentTime = 0; } catch (e) {}
+      v.play().then(() => { if (useRVFC) v.requestVideoFrameCallback(loop); else requestAnimationFrame(loop); })
+        .catch(() => fail(new Error('Der Browser erlaubt das Abspielen nicht')));
+    });
+    if (!thumb) thumb = grabThumb(v);
+    const ds = diffs.map(x => x.d);
+    const med = median(ds) || 0;
+    const thr = clamp(med * 3, 12, 50);
+    // a hard cut is a single-sample spike: clearly above the absolute floor AND far above its neighbours
+    const cuts = []; let lastCut = -1; const isCut = new Array(ds.length).fill(false);
+    for (let i = 0; i < ds.length; i++) {
+      const d = ds[i]; if (d < thr) continue;
+      const nb = [ds[i - 1], ds[i + 1]].filter(x => x != null);
+      const ref = nb.length ? Math.max(...nb) : 0;
+      if (d >= 2 * ref && diffs[i].t - lastCut >= 0.25) { cuts.push(+diffs[i].t.toFixed(2)); lastCut = diffs[i].t; isCut[i] = true; }
+    }
+    const motionRaw = mean(ds.filter((d, i) => !isCut[i]));
+    const cutsPerMin = +(cuts.length / (duration / 60)).toFixed(1);
+    return {
+      durationSec: +duration.toFixed(2), width: W, height: H,
+      cutsPerMin, cuts: cuts.length, cutTimes: cuts.slice(0, 400),
+      motion: +(isFinite(motionRaw) ? motionRaw : 0).toFixed(1),
+      asl: +(duration / (cuts.length + 1)).toFixed(2),
+      samples: diffs.length, thumb, analyzedAt: Date.now(), method: 'browser-v1',
+    };
+  } finally { cleanup(); }
+}
+function grabThumb(v) {
+  try {
+    const W = 72, H = Math.max(40, Math.round(W * v.videoHeight / v.videoWidth));
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    c.getContext('2d').drawImage(v, 0, 0, W, H);
+    return c.toDataURL('image/jpeg', 0.62);
+  } catch (e) { return null; }
+}
+
+// ---------- IndexedDB blob store (local mode only) ----------
+const idb = {
+  db: null,
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise((res, rej) => {
+      if (!('indexedDB' in window)) { rej(new Error('kein IndexedDB')); return; }
+      const r = indexedDB.open('feedlabor', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('blobs');
+      r.onsuccess = () => { this.db = r.result; res(this.db); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async put(key, blob) { const db = await this.open(); return new Promise((res, rej) => { const tx = db.transaction('blobs', 'readwrite'); tx.objectStore('blobs').put(blob, key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); },
+  async get(key) { const db = await this.open(); return new Promise((res, rej) => { const r = db.transaction('blobs').objectStore('blobs').get(key); r.onsuccess = () => res(r.result || null); r.onerror = () => rej(r.error); }); },
+  async del(key) { const db = await this.open(); return new Promise((res, rej) => { const tx = db.transaction('blobs', 'readwrite'); tx.objectStore('blobs').delete(key); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); },
+};
+// Resolve local-mode videos (localKey) to object URLs so the feed can play them.
+async function hydrateLocalVideos() {
+  for (const v of S.videos) {
+    if (v.localKey && !v.assetId && !(v.sources && v.sources.length)) {
+      try { const b = await idb.get(v.localKey); if (b) v.sources = [{ src: URL.createObjectURL(b), type: b.type || 'video/mp4' }]; } catch (e) {}
+    }
+  }
+}
+
+/* =====================================================================
+   Teil 3: Verwaltung – Videos, Kategorien, Einstellungen
+   ===================================================================== */
+const MAX_UPLOAD = 20 * 1024 * 1024;
+
+const admin = {
+  tab: 'videos', bound: false,
+
+  bind() {
+    if (this.bound) return; this.bound = true;
+    $('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) this.open(b.dataset.tab); });
+    $('#btn-tofeed').addEventListener('click', () => { S.adminUnlocked = false; if (location.hash) history.replaceState(null, '', location.pathname + location.search); updateStartBanner(); show('start'); });
+    $('#btn-add').addEventListener('click', () => $('#in-files').click());
+    $('#in-files').addEventListener('change', e => { this.handleFiles([...e.target.files]); e.target.value = ''; });
+    const dz = $('#dropzone');
+    dz.addEventListener('click', () => $('#in-files').click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); this.handleFiles([...e.dataTransfer.files]); });
+    $('#btn-cat-add').addEventListener('click', () => this.addCategory());
+    $('#in-cat').addEventListener('keydown', e => { if (e.key === 'Enter') this.addCategory(); });
+    $('#in-fast').addEventListener('change', () => this.savePace());
+    $('#in-slow').addEventListener('change', () => this.savePace());
+    for (const [id, key] of [['s-estimate', 'askEstimate'], ['s-endless', 'endless'], ['s-captions', 'showCaptions'], ['s-sound', 'soundOn'], ['s-test', 'testMode']]) {
+      $('#' + id).addEventListener('change', e => { S.config.settings[key] = e.target.checked; this.saveConfig(); });
+    }
+    $('#s-rounds').addEventListener('change', e => { S.config.settings.maxRounds = clamp(parseInt(e.target.value) || 1, 1, 10); e.target.value = S.config.settings.maxRounds; this.saveConfig(); });
+    $('#btn-pin-save').addEventListener('click', () => {
+      const p = $('#s-pin').value.trim();
+      if (p && !/^\d{4,8}$/.test(p)) { toast('Der PIN braucht 4 bis 8 Ziffern.'); return; }
+      S.config.settings.pin = p; this.saveConfig(); toast(p ? 'PIN gespeichert.' : 'PIN entfernt.');
+    });
+    $('#btn-del-demo').addEventListener('click', () => this.deleteDemo());
+    $('#btn-del-test').addEventListener('click', () => this.deleteSessions('test'));
+    $('#btn-del-all').addEventListener('click', () => this.deleteSessions('all'));
+    $('#btn-refresh').addEventListener('click', () => stats.load(true));
+    for (const id of ['f-first', 'f-notest', 'f-nodemo']) $('#' + id).addEventListener('change', () => stats.render());
+    $('#btn-setup-ping').addEventListener('click', () => this.setupPing());
+    $('#btn-setup-testlink').addEventListener('click', async () => {
+      const u = location.origin + location.pathname + '?test=1';
+      try { await navigator.clipboard.writeText(u); toast('Test-Link kopiert: ' + u); } catch (e) { toast('Test-Link: ' + u, 6000); }
+    });
+    $('#btn-setup-logout').addEventListener('click', () => { S.readKey = ''; S.adminUnlocked = false; try { sessionStorage.removeItem('fl.key'); } catch (e) {} stats.sessions = null; show('start'); toast('Schlüssel vergessen.'); });
+    $('#btn-csv-views').addEventListener('click', () => stats.exportViews());
+    $('#btn-csv-sessions').addEventListener('click', () => stats.exportSessions());
+    $('#btn-json').addEventListener('click', () => stats.exportJson());
+  },
+
+  open(tab) {
+    const online = isOnline();
+    const allowed = online ? ['stats', 'setup'] : ['videos', 'cats', 'stats', 'settings'];
+    if (tab && allowed.includes(tab)) this.tab = tab;
+    if (!allowed.includes(this.tab)) this.tab = allowed[0];
+    for (const b of $$('#tabs button')) { b.hidden = !allowed.includes(b.dataset.tab); b.classList.toggle('on', b.dataset.tab === this.tab); }
+    for (const t of ['videos', 'cats', 'stats', 'settings', 'setup']) $('#tab-' + t).hidden = t !== this.tab;
+    $('#f-nodemo').parentElement.hidden = online;
+    if (this.tab === 'videos') this.renderVideos();
+    if (this.tab === 'cats') this.renderCats();
+    if (this.tab === 'settings') this.renderSettings();
+    if (this.tab === 'setup') this.renderSetup();
+    if (this.tab === 'stats') stats.load();
+  },
+
+  // ----- setup (online version) -----
+  renderSetup() {
+    this.setupPing();
+    const list = $('#setup-videos'); list.replaceChildren();
+    if (!S.videos.length) list.append(el('p', { class: 'muted small', text: 'Keine Videos eingebaut.' }));
+    for (const v of S.videos) { const c = this.videoCard(v).cloneNode(true); c.classList.add('static'); c.removeAttribute('role'); c.removeAttribute('tabindex'); list.append(c); }
+    const cats = S.config.categories.map(c => `<span class="chip" style="color:${catColor(c.id)}"><i class="dot"></i><span style="color:var(--ink-2)">${esc(c.name)} · ${S.videos.filter(v => v.categoryId === c.id).length}</span></span>`).join(' ');
+    $('#setup-config').innerHTML = `${cats}<br><br>Tempo: ab <b>${S.config.pace.fastMin}</b> Schnitten/min „schnell“, bis <b>${S.config.pace.slowMax}</b> „langsam“. Zeitschätzung am Ende: <b>${S.config.settings.askEstimate ? 'ja' : 'nein'}</b>. Feed läuft weiter: <b>${S.config.settings.endless ? 'ja, max. ' + S.config.settings.maxRounds + ' Runden' : 'nein'}</b>.`;
+  },
+  async setupPing() {
+    const st = $('#setup-status');
+    if (!remote.enabled) { st.innerHTML = '<b style="color:var(--crit)">Kein Speicherort eingetragen.</b> Trage die Web-App-URL deines Google-Scripts in <code>config.json</code> ein (Feld „endpoint“).'; return; }
+    st.textContent = 'Prüfe Verbindung …';
+    try {
+      const j = await remote.get({ action: 'ping' });
+      st.innerHTML = `<b style="color:var(--good)">Verbunden.</b> ${j.sessions ?? '?'} Session(s) in der Tabelle. Endpunkt: <code>${esc(remote.url.slice(0, 60))}…</code>`;
+    } catch (e) { st.innerHTML = `<b style="color:var(--crit)">Keine Verbindung:</b> ${esc(e.message || e)}. Ist das Script als Web-App mit Zugriff „Jeder“ bereitgestellt?`; }
+  },
+
+  async saveConfig() { try { await store.saveConfig(S.config); } catch (e) { toast('Speichern fehlgeschlagen – Verbindung prüfen.'); } },
+
+  // ----- videos -----
+  renderVideos() {
+    const note = $('#storage-note');
+    const canUpload = store.mode === 'db' ? !!CAP.assets : true;
+    if (store.mode === 'db' && !CAP.assets) { note.hidden = false; note.className = 'notice warn'; note.innerHTML = '<b>Nur Lesezugriff:</b> Videos hochladen kann nur, wer diese Seite bearbeiten darf.'; }
+    else if (store.mode === 'local') { note.hidden = false; note.className = 'notice'; note.innerHTML = '<b>Lokaler Modus:</b> Videos und Ergebnisse werden nur in diesem Browser gespeichert. In der veröffentlichten Version auf claude.ai landen sie in der Datenbank der Seite.'; }
+    else note.hidden = true;
+    $('#dropzone').hidden = !canUpload; $('#btn-add').disabled = !canUpload;
+    const list = $('#vlist'); list.replaceChildren();
+    if (!S.videos.length) {
+      list.append(el('div', { class: 'empty card', style: 'grid-column:1/-1' }, el('b', { text: 'Noch keine Videos' }), el('span', { text: 'Füge MP4- oder WebM-Dateien hinzu. Sie werden automatisch vermessen.' })));
+      return;
+    }
+    for (const v of S.videos) list.append(this.videoCard(v));
+  },
+  videoCard(v) {
+    const pc = paceClass(v);
+    const thumb = v.thumb ? el('img', { class: 'thumb', src: v.thumb, alt: '' }) : el('div', { class: 'thumb empty', text: '—' });
+    const card = el('div', { class: 'card vcard', role: 'button', tabindex: 0 },
+      thumb,
+      el('div', {},
+        el('div', { class: 't', text: v.title || 'Ohne Titel' }),
+        el('div', { class: 'meta' },
+          el('span', { class: 'chip', style: 'color:' + catColor(v.categoryId) }, el('i', { class: 'dot' }), el('span', { style: 'color:var(--ink-2)', text: catName(v.categoryId) })),
+          el('span', { class: 'chip pace-' + pc, text: PACE_LABEL[pc] + (v.paceOverride ? ' (manuell)' : '') }),
+          !playable(v) ? el('span', { class: 'chip', style: 'color:var(--crit)', text: 'keine Datei' }) : null),
+        el('div', { class: 'stats' },
+          el('div', {}, el('b', { text: fmt.sec(v.durationSec) }), 'Länge'),
+          el('div', {}, el('b', { text: fmt.n1(v.cutsPerMin) }), 'Schnitte/min'),
+          el('div', {}, el('b', { text: fmt.n1(v.motion) }), 'Bewegung'))),
+      v.demo ? el('span', { class: 'badge', text: 'Beispiel' }) : null);
+    const openIt = () => this.editVideo(v);
+    card.addEventListener('click', openIt);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIt(); } });
+    return card;
+  },
+
+  async handleFiles(files) {
+    const ok = files.filter(f => /\.(mp4|m4v|webm)$/i.test(f.name) || /^video\/(mp4|webm)$/.test(f.type));
+    if (!ok.length) { toast('Bitte MP4- oder WebM-Dateien wählen.'); return; }
+    if (ok.length < files.length) toast('Einige Dateien wurden übersprungen (nur MP4/WebM).');
+    for (const f of ok) await this.addFile(f);
+  },
+  async addFile(file) {
+    const box = el('div', { class: 'card upl' });
+    const name = el('div', { class: 'n', text: file.name });
+    const status = el('div', { class: 's', text: 'Wird vermessen …' });
+    const bar = el('div', { class: 'progress' }, el('i'));
+    box.append(name, status, bar); $('#uploads').prepend(box);
+    const setP = p => { bar.firstChild.style.width = (p * 100).toFixed(1) + '%'; };
+    try {
+      if (file.size > MAX_UPLOAD) throw new Error('Datei ist grösser als 20 MB – bitte kleiner exportieren (z. B. 720p).');
+      const mime = /\.webm$/i.test(file.name) || file.type === 'video/webm' ? 'video/webm' : 'video/mp4';
+      const a = await analyzeVideo(file, p => { setP(p * 0.85); status.textContent = 'Wird vermessen … ' + Math.round(p * 100) + ' %'; });
+      status.textContent = 'Wird gespeichert …'; setP(0.9);
+      const id = uid(10);
+      const v = {
+        id, title: file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'Video', caption: '', handle: 'feedlabor',
+        categoryId: '', paceOverride: null, mime, sizeBytes: file.size, addedAt: Date.now(), demo: false,
+        durationSec: a.durationSec, width: a.width, height: a.height, cutsPerMin: a.cutsPerMin, cuts: a.cuts, cutTimes: a.cutTimes,
+        motion: a.motion, asl: a.asl, samples: a.samples, thumb: a.thumb, analyzedAt: a.analyzedAt, method: a.method,
+      };
+      if (store.mode === 'db') {
+        if (!CAP.assets) throw new Error('Hochladen ist in dieser Ansicht nicht möglich.');
+        const up = await CAP.assets.upload(file, { type: mime });
+        v.assetId = up.id; v.mime = up.contentType || mime;
+      } else {
+        await idb.put(id, file);
+        v.localKey = id; v.sources = [{ src: URL.createObjectURL(file), type: mime }];
+      }
+      await store.saveVideo(v);
+      S.videos.push(v); sortVideos();
+      setP(1); status.textContent = 'Fertig: ' + fmt.sec(v.durationSec) + ', ' + fmt.n1(v.cutsPerMin) + ' Schnitte/min, Bewegung ' + fmt.n1(v.motion);
+      setTimeout(() => box.remove(), 4000);
+      this.renderVideos(); updateStartBanner();
+      this.editVideo(v);
+    } catch (e) {
+      const msg = e && e.code ? ({ too_large: 'Datei zu gross (max. 20 MB).', unsupported_type: 'Dateityp wird nicht unterstützt (nur MP4/WebM).', quota_or_state: 'Speicherplatz der Seite ist voll.', rate_limited: 'Zu viele Uploads – kurz warten.', upstream_auth: 'Bitte Seite neu laden und erneut versuchen.' }[e.code] || ('Upload fehlgeschlagen (' + e.code + ').')) : (e && e.message) || 'Unbekannter Fehler';
+      status.textContent = 'Fehler: ' + msg; status.style.color = 'var(--crit)'; bar.hidden = true;
+    }
+  },
+
+  editVideo(v) {
+    const cats = S.config.categories;
+    const fTitle = el('input', { type: 'text', id: 'ev-title', value: v.title || '' });
+    const fHandle = el('input', { type: 'text', id: 'ev-handle', value: v.handle || 'feedlabor', placeholder: 'feedlabor' });
+    const fCap = el('textarea', { id: 'ev-cap', placeholder: 'Text, der unter dem Video erscheint (wie eine Beschreibung)' }); fCap.value = v.caption || '';
+    const fCat = el('select', { id: 'ev-cat' }, el('option', { value: '', text: 'ohne Kategorie' }), ...cats.map(c => el('option', { value: c.id, text: c.name })));
+    fCat.value = v.categoryId || '';
+    const fPace = el('select', { id: 'ev-pace' },
+      el('option', { value: '', text: 'automatisch (' + PACE_LABEL[paceClass(Object.assign({}, v, { paceOverride: null }))] + ')' }),
+      ...['schnell', 'mittel', 'langsam'].map(p => el('option', { value: p, text: 'manuell: ' + p })));
+    fPace.value = v.paceOverride || '';
+    const prev = el('video', { class: 'vprev', controls: true, preload: 'metadata', playsinline: true }); prev.muted = true;
+    for (const s of videoSources(v)) prev.append(el('source', { src: s.src, type: s.type }));
+    const analysis = el('div', { class: 'muted small' });
+    const renderAnalysis = () => {
+      analysis.innerHTML = `Länge <b>${esc(fmt.sec(v.durationSec))}</b> · ${v.width || '?'}×${v.height || '?'} · Schnitte <b>${v.cuts ?? '–'}</b> (${esc(fmt.n1(v.cutsPerMin))}/min, Ø Einstellung ${esc(fmt.n1(v.asl))} s) · Bewegungsindex <b>${esc(fmt.n1(v.motion))}</b>`;
+    };
+    renderAnalysis();
+    const reBtn = el('button', { class: 'btn sm', type: 'button' }, 'Neu vermessen');
+    const reBar = el('div', { class: 'progress', hidden: true }, el('i'));
+    reBtn.addEventListener('click', async () => {
+      const src = videoSources(v)[0]; if (!src) { toast('Keine Videodatei vorhanden.'); return; }
+      reBtn.disabled = true; reBar.hidden = false;
+      try {
+        let source = src.src;
+        if (v.localKey) { const b = await idb.get(v.localKey); if (b) source = b; }
+        const a = await analyzeVideo(source, p => { reBar.firstChild.style.width = (p * 100) + '%'; });
+        Object.assign(v, { durationSec: a.durationSec, width: a.width, height: a.height, cutsPerMin: a.cutsPerMin, cuts: a.cuts, cutTimes: a.cutTimes, motion: a.motion, asl: a.asl, samples: a.samples, analyzedAt: a.analyzedAt, method: a.method });
+        if (a.thumb) v.thumb = a.thumb;
+        renderAnalysis(); toast('Neu vermessen.');
+      } catch (e) { toast('Vermessen fehlgeschlagen: ' + (e.message || e)); }
+      reBtn.disabled = false; reBar.hidden = true;
+    });
+    const save = async () => {
+      v.title = fTitle.value.trim() || 'Video';
+      v.handle = fHandle.value.trim().replace(/^@/, '') || 'feedlabor';
+      v.caption = fCap.value.trim();
+      v.categoryId = fCat.value;
+      v.paceOverride = fPace.value || null;
+      try { await store.saveVideo(v); closeModal(); this.renderVideos(); toast('Gespeichert.'); }
+      catch (e) { toast('Speichern fehlgeschlagen.'); }
+    };
+    const del = async () => {
+      const ok = await confirmModal({ title: 'Video löschen?', text: '„' + (v.title || 'Video') + '“ wird aus dem Feed entfernt. Bereits gemessene Ansichten bleiben in den Sessions erhalten.' });
+      if (!ok) return;
+      try {
+        if (v.assetId && CAP.assets) { try { await CAP.assets.delete(v.assetId); } catch (e) {} }
+        if (v.localKey) { try { await idb.del(v.localKey); } catch (e) {} }
+        await store.deleteVideo(v.id);
+        S.videos = S.videos.filter(x => x.id !== v.id);
+        closeModal(); this.renderVideos(); updateStartBanner(); toast('Video gelöscht.');
+      } catch (e) { toast('Löschen fehlgeschlagen.'); }
+    };
+    openModal(el('div', { class: 'stack' },
+      el('h2', { text: v.demo ? 'Beispielvideo' : 'Video bearbeiten' }),
+      prev,
+      analysis, reBar, el('div', {}, reBtn),
+      el('div', { class: 'field' }, el('label', { for: 'ev-title', text: 'Titel (intern, nur für dich)' }), fTitle),
+      el('div', { class: 'grid2' },
+        el('div', { class: 'field' }, el('label', { for: 'ev-cat', text: 'Kategorie' }), fCat),
+        el('div', { class: 'field' }, el('label', { for: 'ev-pace', text: 'Tempo' }), fPace)),
+      el('div', { class: 'grid2' },
+        el('div', { class: 'field' }, el('label', { for: 'ev-handle', text: 'Kanalname im Feed' }), fHandle)),
+      el('div', { class: 'field' }, el('label', { for: 'ev-cap', text: 'Bildtext im Feed' }), fCap),
+      el('div', { class: 'actions' },
+        el('button', { class: 'btn danger left', type: 'button', onclick: del }, 'Löschen'),
+        el('button', { class: 'btn', type: 'button', onclick: closeModal }, 'Abbrechen'),
+        el('button', { class: 'btn primary', type: 'button', onclick: save }, 'Speichern'))));
+  },
+
+  // ----- categories -----
+  renderCats() {
+    const list = $('#catlist'); list.replaceChildren();
+    const cats = S.config.categories;
+    if (!cats.length) list.append(el('p', { class: 'muted small', text: 'Noch keine Kategorien.' }));
+    for (const c of cats) {
+      const n = S.videos.filter(v => v.categoryId === c.id).length;
+      const name = el('input', { type: 'text', value: c.name, 'aria-label': 'Kategoriename', style: 'padding:6px 9px;border-color:transparent;background:transparent;font-weight:600' });
+      name.addEventListener('change', () => { c.name = name.value.trim() || c.name; name.value = c.name; this.saveConfig(); });
+      name.addEventListener('focus', () => { name.style.borderColor = 'var(--line-2)'; name.style.background = 'var(--surface)'; });
+      name.addEventListener('blur', () => { name.style.borderColor = 'transparent'; name.style.background = 'transparent'; });
+      const delBtn = el('button', { class: 'btn ghost sm', type: 'button', 'aria-label': 'Kategorie löschen', text: 'Entfernen' });
+      delBtn.addEventListener('click', async () => {
+        const ok = await confirmModal({ title: 'Kategorie entfernen?', text: n ? `${n} Video(s) verlieren dadurch ihre Kategorie.` : 'Die Kategorie wird gelöscht.', ok: 'Entfernen' });
+        if (!ok) return;
+        S.config.categories = S.config.categories.filter(x => x.id !== c.id);
+        for (const v of S.videos) if (v.categoryId === c.id) { v.categoryId = ''; store.saveVideo(v).catch(() => {}); }
+        await this.saveConfig(); this.renderCats();
+      });
+      list.append(el('div', { class: 'catrow' }, el('span', { class: 'sw', style: 'background:' + catColor(c.id) }), name, el('span', { class: 'c', text: n + (n === 1 ? ' Video' : ' Videos') }), delBtn));
+    }
+    $('#in-fast').value = S.config.pace.fastMin; $('#in-slow').value = S.config.pace.slowMax;
+    this.pacePreview();
+  },
+  async addCategory() {
+    const name = $('#in-cat').value.trim(); if (!name) return;
+    const used = new Set(S.config.categories.map(c => c.slot));
+    let slot = 0; while (used.has(slot) && slot < 8) slot++;
+    if (slot >= 8) { toast('Maximal 8 Kategorien – sonst gehen die Farben in der Statistik nicht mehr auseinander.'); return; }
+    S.config.categories.push({ id: name.toLowerCase().replace(/[^a-z0-9äöü]+/g, '-').replace(/^-|-$/g, '').slice(0, 20) + '-' + uid(4), name, slot });
+    $('#in-cat').value = '';
+    await this.saveConfig(); this.renderCats();
+  },
+  savePace() {
+    const f = parseFloat($('#in-fast').value), s = parseFloat($('#in-slow').value);
+    if (isFinite(f)) S.config.pace.fastMin = Math.max(0, f);
+    if (isFinite(s)) S.config.pace.slowMax = Math.max(0, s);
+    if (S.config.pace.slowMax >= S.config.pace.fastMin) { S.config.pace.slowMax = Math.max(0, S.config.pace.fastMin - 1); $('#in-slow').value = S.config.pace.slowMax; toast('„langsam“ muss unter „schnell“ liegen – angepasst.'); }
+    this.saveConfig(); this.pacePreview();
+  },
+  pacePreview() {
+    const cnt = { schnell: 0, mittel: 0, langsam: 0 };
+    for (const v of S.videos) cnt[paceClass(v)]++;
+    $('#pace-preview').textContent = `Aktuelle Verteilung: ${cnt.schnell} schnell · ${cnt.mittel} mittel · ${cnt.langsam} langsam`;
+  },
+
+  // ----- settings -----
+  async renderSettings() {
+    const st = S.config.settings;
+    $('#s-estimate').checked = !!st.askEstimate; $('#s-endless').checked = !!st.endless; $('#s-captions').checked = !!st.showCaptions;
+    $('#s-sound').checked = !!st.soundOn; $('#s-test').checked = !!st.testMode; $('#s-rounds').value = st.maxRounds || 3; $('#s-pin').value = st.pin || '';
+    const info = $('#storage-info');
+    info.textContent = store.mode === 'db' ? 'Speicher: Datenbank dieser Seite (claude.ai). ' : 'Speicher: nur dieser Browser (lokaler Modus). ';
+    try {
+      const ss = await store.loadSessions();
+      info.textContent += `${ss.length} Session(s), ${S.videos.length} Video(s).`;
+      if (CAP.assets) { const l = await CAP.assets.list(); info.textContent += ` Videodateien: ${(l.usage.bytes / 1048576).toFixed(1)} MB von ${(l.usage.maxBytes / 1048576).toFixed(0)} MB belegt.`; }
+    } catch (e) {}
+  },
+  async deleteDemo() {
+    const ok = await confirmModal({ title: 'Beispieldaten entfernen?', text: 'Alle Beispielvideos und Beispiel-Sessions werden gelöscht. Deine eigenen Videos und Messungen bleiben.', ok: 'Entfernen' });
+    if (!ok) return;
+    try {
+      for (const v of S.videos.filter(v => v.demo)) await store.deleteVideo(v.id);
+      S.videos = S.videos.filter(v => !v.demo);
+      const ss = await store.loadSessions();
+      for (const s of ss.filter(s => s.demo)) await store.deleteSession(s.id);
+      stats.sessions = null; updateStartBanner(); this.renderSettings(); toast('Beispieldaten entfernt.');
+    } catch (e) { toast('Entfernen fehlgeschlagen.'); }
+  },
+  async deleteSessions(which) {
+    const ok = await confirmModal({ title: which === 'all' ? 'Wirklich alle Sessions löschen?' : 'Test-Sessions löschen?', text: which === 'all' ? 'Sämtliche Messungen aller Teilnehmenden werden unwiderruflich gelöscht. Vorher exportieren!' : 'Alle als Test markierten Sessions werden gelöscht.' });
+    if (!ok) return;
+    try {
+      const ss = await store.loadSessions();
+      const del = ss.filter(s => which === 'all' || s.test);
+      for (const s of del) await store.deleteSession(s.id);
+      stats.sessions = null; this.renderSettings(); toast(del.length + ' Session(s) gelöscht.');
+    } catch (e) { toast('Löschen fehlgeschlagen.'); }
+  },
+};
+
+/* =====================================================================
+   Teil 4: Statistik – Kennzahlen, Diagramme, Tabellen, Export
+   ===================================================================== */
+const PACE_ORDER = ['schnell', 'mittel', 'langsam'];
+const PACE_COLOR = { schnell: 'var(--p3)', mittel: 'var(--p2)', langsam: 'var(--p1)' };
+
+const stats = {
+  sessions: null, xAxis: 'cutsPerMin',
+
+  async load(force) {
+    if (this.sessions && !force) { this.render(); return; }
+    $('#stats-body').replaceChildren(el('div', { class: 'empty' }, el('b', { text: 'Lade Messungen …' })));
+    try { this.sessions = await store.loadSessions(); } catch (e) { this.sessions = []; toast('Sessions konnten nicht geladen werden.'); }
+    this.render();
+  },
+
+  prepare() {
+    const first = $('#f-first').checked, notest = $('#f-notest').checked, nodemo = $('#f-nodemo').checked;
+    const sessions = (this.sessions || [])
+      .filter(s => (!notest || (!s.test && !s.repeat)) && (!nodemo || !s.demo))
+      .map(s => {
+        const o = Object.assign({}, s, { views: (s.views || []).slice() });
+        if (o.status !== 'ended') { o.endedBy = 'abandoned'; o.endedAt = o.lastSeenAt || o.startedAt; o.durationMs = Math.max(0, o.endedAt - o.startedAt); }
+        o.firstViews = o.views.filter(v => !v.revisit && (v.round || 1) === 1).length;
+        o.roundsViewed = o.views.length ? Math.max(...o.views.map(v => v.round || 1)) : 1;
+        return o;
+      })
+      .sort((a, b) => a.startedAt - b.startedAt);
+    const views = [];
+    for (const s of sessions) for (const vw of s.views) {
+      if (first && (vw.revisit || (vw.round || 1) > 1)) continue;
+      const vid = S.videos.find(x => x.id === vw.videoId) || null;
+      const dur = vw.durationSec || (vid && vid.durationSec) || 0;
+      const watchS = (vw.watchMs || 0) / 1000;
+      views.push(Object.assign({}, vw, {
+        sid: s.id, video: vid, title: vid ? vid.title : '(gelöschtes Video)',
+        categoryId: vid ? (vid.categoryId || '') : '', pace: vid ? paceClass(vid) : 'mittel',
+        cutsPerMin: vid ? vid.cutsPerMin : NaN, motion: vid ? vid.motion : NaN,
+        durationSec: dur, watchS, ratio: dur ? watchS / dur : NaN, exitRatio: dur ? clamp((vw.exitPos || 0) / dur, 0, 1) : NaN,
+      }));
+    }
+    return { sessions, views };
+  },
+
+  agg(list) {
+    const r = list.map(v => v.ratio).filter(isFinite);
+    return {
+      n: list.length, ratio: mean(r), watchS: mean(list.map(v => v.watchS)),
+      completed: list.length ? list.filter(v => v.completed).length / list.length : NaN,
+      loops: mean(list.map(v => v.loops || 0)), liked: list.length ? list.filter(v => v.liked).length / list.length : NaN,
+      exit: mean(list.map(v => v.exitRatio).filter(isFinite)), dwellS: mean(list.map(v => (v.dwellMs || 0) / 1000)),
+    };
+  },
+  groupBy(list, keyFn) { const m = new Map(); for (const x of list) { const k = keyFn(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); } return m; },
+  pearson(xs, ys) {
+    const n = xs.length; if (n < 3) return NaN;
+    const mx = mean(xs), my = mean(ys); let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) { const dx = xs[i] - mx, dy = ys[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+    return sxx && syy ? sxy / Math.sqrt(sxx * syy) : NaN;
+  },
+
+  render() {
+    const body = $('#stats-body'); body.replaceChildren();
+    const { sessions, views } = this.prepare();
+    if (!sessions.length) {
+      body.append(el('div', { class: 'empty card' }, el('b', { text: 'Noch keine Messungen' }),
+        el('span', { text: 'Sobald jemand den Feed durchscrollt und auf „Fertig“ tippt, erscheinen hier die Auswertungen. Zum Ausprobieren den Testmodus einschalten.' })));
+      return;
+    }
+    const A = this.agg(views);
+    const est = sessions.filter(s => s.estimateMin != null && s.durationMs > 0).map(s => ({ actual: s.durationMs / 60000, est: s.estimateMin, s }));
+    const estDiff = mean(est.map(e => e.est - e.actual));
+    const kpis = [
+      [String(sessions.length), 'Teilnehmende', sessions.filter(s => s.endedBy === 'abandoned').length ? sessions.filter(s => s.endedBy === 'abandoned').length + ' ohne „Fertig“' : 'alle abgeschlossen'],
+      [fmt.min(mean(sessions.map(s => s.durationMs))), 'Ø Zeit pro Person', 'gesamt ' + fmt.min(sessions.reduce((a, s) => a + (s.durationMs || 0), 0))],
+      [fmt.n1(mean(sessions.map(s => s.views.length))), 'Ø Videos pro Person', 'davon ' + fmt.n1(mean(sessions.map(s => s.firstViews))) + ' erstmalig'],
+      [fmt.pct(A.ratio), 'Ø Schauzeit / Länge', 'Ø ' + fmt.sec(A.watchS) + ' pro Video'],
+      [fmt.pct(A.completed), 'bis zum Ende geschaut', 'Ø ' + fmt.n1(A.loops) + ' Wiederholungen'],
+      est.length ? [(estDiff >= 0 ? '+' : '−') + fmt.n1(Math.abs(estDiff)) + ' min', 'Zeitgefühl', 'geschätzt minus echt, n = ' + est.length] : null,
+    ].filter(Boolean);
+    body.append(el('div', { class: 'kpis' }, ...kpis.map(([v, l, s]) => el('div', { class: 'card kpi' }, el('div', { class: 'v', text: v }), el('div', { class: 'l', text: l }), el('div', { class: 's', text: s })))));
+
+    // per category / pace / video
+    const byCat = [...this.groupBy(views, v => v.categoryId)].map(([id, list]) => Object.assign({ id, name: catName(id), color: catColor(id) }, this.agg(list))).sort((a, b) => b.ratio - a.ratio);
+    const byPace = PACE_ORDER.map(p => Object.assign({ id: p, name: PACE_LABEL[p], color: PACE_COLOR[p] }, this.agg(views.filter(v => v.pace === p)), { cuts: mean(views.filter(v => v.pace === p).map(v => v.cutsPerMin).filter(isFinite)) })).filter(x => x.n);
+    const byVideo = [...this.groupBy(views, v => v.videoId)].map(([id, list]) => Object.assign({ id, v: list[0].video, title: list[0].title, categoryId: list[0].categoryId, pace: list[0].pace, cutsPerMin: list[0].cutsPerMin, motion: list[0].motion, durationSec: list[0].durationSec }, this.agg(list))).sort((a, b) => b.ratio - a.ratio);
+    const vidsWithMetric = byVideo.filter(x => isFinite(x.cutsPerMin) && isFinite(x.ratio));
+    const rCuts = this.pearson(vidsWithMetric.map(x => x.cutsPerMin), vidsWithMetric.map(x => x.ratio));
+    const vidsMotion = byVideo.filter(x => isFinite(x.motion) && isFinite(x.ratio));
+    const rMotion = this.pearson(vidsMotion.map(x => x.motion), vidsMotion.map(x => x.ratio));
+
+    // the answer
+    const topCat = byCat.find(c => c.id) || byCat[0];
+    const topPace = byPace.slice().sort((a, b) => b.ratio - a.ratio)[0];
+    const rWord = r => !isFinite(r) ? 'zu wenige Videos' : Math.abs(r) < 0.2 ? 'kaum' : Math.abs(r) < 0.5 ? (r > 0 ? 'leicht positiv' : 'leicht negativ') : (r > 0 ? 'deutlich positiv' : 'deutlich negativ');
+    body.append(el('div', { class: 'card answer' },
+      el('div', { class: 'eyebrow', text: 'Was hält am längsten?' }),
+      el('h3', { html: topCat ? `Kategorie <span style="color:${topCat.color}">${esc(topCat.name)}</span> – Ø ${esc(fmt.pct(topCat.ratio))} der Videolänge` : 'Noch zu wenige Daten' }),
+      el('p', { html: (topPace ? `Tempo: <b>${esc(topPace.name)}</b> geschnittene Videos liegen vorn (${byPace.map(p => esc(p.name) + ' ' + esc(fmt.pct(p.ratio))).join(' · ')}). ` : '') +
+        `Zusammenhang Schnitte/min ↔ Schauanteil: <b>${rWord(rCuts)}</b> (r = ${esc(fmt.n1(rCuts).replace('NaN', '–'))}, n = ${vidsWithMetric.length} Videos). ` +
+        `Bewegung ↔ Schauanteil: <b>${rWord(rMotion)}</b> (r = ${esc(fmt.n1(rMotion))}).` })));
+
+    // charts
+    const charts = el('div', { class: 'charts' });
+    charts.append(this.chartCard('Schauzeit nach Kategorie', 'Ø Schauzeit in % der Videolänge · über 100 % = mehrfach geschaut', w => this.hbar(byCat.map(c => ({ label: c.name, value: c.ratio * 100, n: c.n, color: c.color })), w)));
+    charts.append(this.chartCard('Schauzeit nach Tempo', 'Tempo aus Schnitten pro Minute (Schwellen: ab ' + S.config.pace.fastMin + ' schnell, bis ' + S.config.pace.slowMax + ' langsam)', w => this.hbar(byPace.map(p => ({ label: p.name + (isFinite(p.cuts) ? ' (Ø ' + fmt.n1(p.cuts) + '/min)' : ''), value: p.ratio * 100, n: p.n, color: p.color })), w)));
+    const xSel = el('select', { id: 'x-axis', style: 'width:auto;padding:5px 9px;font-size:13px' },
+      el('option', { value: 'cutsPerMin', text: 'Schnitte pro Minute' }), el('option', { value: 'motion', text: 'Bewegungsindex' }), el('option', { value: 'durationSec', text: 'Videolänge (s)' }));
+    xSel.value = this.xAxis; xSel.addEventListener('change', () => { this.xAxis = xSel.value; this.render(); });
+    const xLab = { cutsPerMin: 'Schnitte pro Minute', motion: 'Bewegungsindex', durationSec: 'Videolänge (s)' }[this.xAxis];
+    const pts = byVideo.filter(x => isFinite(x[this.xAxis]) && isFinite(x.ratio)).map(x => ({
+      x: x[this.xAxis], y: x.ratio * 100, color: catColor(x.categoryId),
+      tip: `<b>${esc(x.title)}</b><br>${esc(catName(x.categoryId))} · ${esc(x.pace)} · ${esc(fmt.n1(x.cutsPerMin))} Schnitte/min<br>Ø ${esc(fmt.pct(x.ratio))} der Länge · ${x.n} Ansicht${x.n === 1 ? '' : 'en'}`,
+    }));
+    const r = this.pearson(pts.map(p => p.x), pts.map(p => p.y));
+    const usedCats = [...new Set(byVideo.map(x => x.categoryId))];
+    const legend = el('div', { class: 'legend' }, ...usedCats.map(id => el('span', {}, el('i', { style: 'background:' + catColor(id) }), catName(id))));
+    const sc = this.chartCard('Jedes Video einzeln', `Ein Punkt pro Video · Farbe = Kategorie · r = ${fmt.n1(r)}`, w => this.scatter(pts, xLab, 'Ø Schauzeit in % der Länge', {}, w), true);
+    sc.querySelector('h3').after(el('div', { class: 'row between' }, el('span', { class: 'sub', text: 'x-Achse:' }), xSel));
+    sc.append(legend);
+    charts.append(sc);
+    if (est.length >= 2) {
+      const ep = est.map(e => ({ x: e.actual, y: e.est, color: 'var(--s1)', tip: `<b>${esc(fmt.date(e.s.startedAt))}</b><br>echt ${esc(fmt.n1(e.actual))} min · geschätzt ${esc(fmt.n1(e.est))} min` }));
+      charts.append(this.chartCard('Zeitgefühl', 'Geschätzte gegen tatsächliche Scrollzeit · auf der Diagonale stimmt die Schätzung', w => this.scatter(ep, 'tatsächlich (min)', 'geschätzt (min)', { diagonal: true, noTrend: true }, w), true));
+    }
+    body.append(charts);
+    requestAnimationFrame(() => this.drawCharts());
+
+    // video table
+    const vt = el('table', {}, el('thead', {}, el('tr', {}, ...['Video', 'Kategorie', 'Tempo', 'Schnitte/min', 'Bewegung', 'Länge', 'Ansichten', 'Ø Schauzeit', 'Ø % Länge', 'Fertig', 'Ø Wdh.', 'Likes', 'Ø Ausstieg'].map((h, i) => el('th', { class: i >= 3 ? 'num' : '', text: h })))),
+      el('tbody', {}, ...byVideo.map(x => el('tr', {},
+        el('td', {}, el('b', { text: x.title })),
+        el('td', {}, el('span', { class: 'chip', style: 'color:' + catColor(x.categoryId) }, el('i', { class: 'dot' }), el('span', { style: 'color:var(--ink-2)', text: catName(x.categoryId) }))),
+        el('td', {}, el('span', { class: 'chip pace-' + x.pace, text: x.pace })),
+        el('td', { class: 'num', text: fmt.n1(x.cutsPerMin) }), el('td', { class: 'num', text: fmt.n1(x.motion) }), el('td', { class: 'num', text: fmt.sec(x.durationSec) }),
+        el('td', { class: 'num', text: String(x.n) }), el('td', { class: 'num', text: fmt.sec(x.watchS) }),
+        el('td', { class: 'num' }, el('span', { class: 'bar-in', style: `width:${clamp(x.ratio * 40, 2, 80)}px;background:${catColor(x.categoryId)}` }), fmt.pct(x.ratio)),
+        el('td', { class: 'num', text: fmt.pct(x.completed) }), el('td', { class: 'num', text: fmt.n1(x.loops) }), el('td', { class: 'num', text: fmt.pct(x.liked) }), el('td', { class: 'num', text: fmt.pct(x.exit) })))));
+    body.append(el('div', { class: 'card', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 4px', text: 'Alle Videos' }), el('div', { class: 'tbl-wrap' }, vt)));
+
+    // session table
+    const st = el('table', {}, el('thead', {}, el('tr', {}, ...['Start', 'Dauer', 'Videos', 'Runden', 'Ø % Länge', 'Likes', 'geschätzt', 'Ende', ''].map((h, i) => el('th', { class: i >= 1 && i <= 6 ? 'num' : '', text: h })))),
+      el('tbody', {}, ...sessions.slice().reverse().map(s => {
+        const sv = views.filter(v => v.sid === s.id); const a = this.agg(sv);
+        const delBtn = el('button', { class: 'btn ghost sm', 'aria-label': 'Session löschen', text: '×' });
+        delBtn.addEventListener('click', async () => {
+          if (!await confirmModal({ title: 'Session löschen?', text: 'Die Messung vom ' + fmt.date(s.startedAt) + ' wird entfernt.' })) return;
+          try { await store.deleteSession(s.id); this.sessions = this.sessions.filter(x => x.id !== s.id); this.render(); toast('Session gelöscht.'); } catch (e) { toast('Löschen fehlgeschlagen.'); }
+        });
+        return el('tr', {},
+          el('td', {}, fmt.date(s.startedAt), s.code ? el('span', { class: 'chip', style: 'margin-left:6px;font-family:var(--font-display);letter-spacing:.08em', text: s.code }) : null, s.test ? el('span', { class: 'chip', style: 'margin-left:6px', text: 'Test' }) : null, s.repeat ? el('span', { class: 'chip', style: 'margin-left:6px', text: 'Wiederholung' }) : null, s.demo ? el('span', { class: 'chip', style: 'margin-left:6px', text: 'Beispiel' }) : null),
+          el('td', { class: 'num', text: fmt.min(s.durationMs) }), el('td', { class: 'num', text: s.views.length + (s.firstViews !== s.views.length ? ' (' + s.firstViews + ' neu)' : '') }),
+          el('td', { class: 'num', text: String(s.roundsViewed) }), el('td', { class: 'num', text: fmt.pct(a.ratio) }), el('td', { class: 'num', text: String(sv.filter(v => v.liked).length) }),
+          el('td', { class: 'num', text: s.estimateMin != null ? de(s.estimateMin) + ' min' : '–' }),
+          el('td', { text: s.endedBy === 'done' ? 'Fertig' : 'abgebrochen' }), el('td', {}, delBtn));
+      })));
+    body.append(el('div', { class: 'card', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 4px', text: 'Alle Sessions' }), el('div', { class: 'tbl-wrap' }, st)));
+    this.bindTips(body);
+  },
+
+  chartCard(title, sub, draw, wide) {
+    const c = el('div', { class: 'card chart' + (wide ? ' wide' : '') }, el('h3', { text: title }), el('div', { class: 'sub', text: sub }), el('div', { class: 'svgbox' }));
+    c._draw = draw; return c;
+  },
+  // charts are drawn at the card's real pixel width so labels keep their size on every screen
+  drawCharts() {
+    for (const c of $$('#stats-body .chart')) {
+      if (!c._draw) continue;
+      const w = Math.max(260, Math.round(c.clientWidth - 34));
+      if (c._w === w) continue; c._w = w;
+      c.querySelector('.svgbox').innerHTML = c._draw(w);
+    }
+    if (!this._ro && 'ResizeObserver' in window) {
+      this._ro = new ResizeObserver(() => { clearTimeout(this._roT); this._roT = setTimeout(() => this.drawCharts(), 120); });
+      this._ro.observe($('#stats-body'));
+    }
+  },
+
+  // horizontal bars: rows [{label, value(%), n, color}]
+  hbar(rows, W = 560) {
+    if (!rows.length) return '<div class="empty">Keine Daten</div>';
+    const rowH = 34, top = 6, bottom = 26, L = Math.min(170, Math.round(W * 0.3)), R = 120;
+    const H = top + rows.length * rowH + bottom;
+    const max = Math.max(100, Math.ceil(Math.max(...rows.map(r => r.value || 0)) / 25) * 25);
+    const x = v => L + (W - L - R) * (v / max);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Balkendiagramm">`;
+    const ticks = []; for (let t = 0; t <= max; t += 25) ticks.push(t);
+    for (const t of ticks) s += `<line class="grid" x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${H - bottom + 4}"/><text x="${x(t)}" y="${H - 8}" text-anchor="middle">${t} %</text>`;
+    s += `<line class="axis" x1="${L}" y1="${top}" x2="${L}" y2="${H - bottom + 4}"/>`;
+    rows.forEach((r, i) => {
+      const y = top + i * rowH + 7, h = rowH - 14, v = isFinite(r.value) ? r.value : 0;
+      const maxCh = Math.max(8, Math.floor(L / 7.2));
+      const lab = r.label.length > maxCh ? r.label.slice(0, maxCh - 1) + '…' : r.label;
+      s += `<text class="lab" x="${L - 10}" y="${y + h / 2 + 4}" text-anchor="end">${esc(lab)}</text>`;
+      s += `<rect class="mark" x="${L}" y="${y}" width="${Math.max(0, x(v) - L)}" height="${h}" rx="4" fill="${r.color}"/>`;
+      s += `<text class="val" x="${x(v) + 8}" y="${y + h / 2 + 4}">${Math.round(v)} %<tspan class="n" dx="6">n = ${r.n}</tspan></text>`;
+    });
+    return s + '</svg>';
+  },
+
+  scatter(pts, xLabel, yLabel, opt = {}, W = 640) {
+    if (!pts.length) return '<div class="empty">Keine Daten</div>';
+    const H = Math.round(clamp(W * 0.5, 240, 400)), L = 52, R = 18, T = 14, B = 44;
+    const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+    let xmin = 0, xmax = Math.max(...xs), ymin = 0, ymax = Math.max(...ys);
+    if (opt.diagonal) { xmax = ymax = Math.max(xmax, ymax); }
+    const xt = this.ticks(xmin, xmax, 5), yt = this.ticks(ymin, ymax, 5);
+    xmax = xt[xt.length - 1]; ymax = yt[yt.length - 1];
+    const X = v => L + (W - L - R) * ((v - xmin) / (xmax - xmin || 1));
+    const Y = v => T + (H - T - B) * (1 - (v - ymin) / (ymax - ymin || 1));
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Streudiagramm">`;
+    for (const t of yt) s += `<line class="grid" x1="${L}" y1="${Y(t)}" x2="${W - R}" y2="${Y(t)}"/><text x="${L - 8}" y="${Y(t) + 4}" text-anchor="end">${de(+t.toFixed(2))}</text>`;
+    for (const t of xt) s += `<text x="${X(t)}" y="${H - B + 18}" text-anchor="middle">${de(+t.toFixed(2))}</text>`;
+    s += `<line class="axis" x1="${L}" y1="${Y(ymin)}" x2="${W - R}" y2="${Y(ymin)}"/><line class="axis" x1="${L}" y1="${T}" x2="${L}" y2="${Y(ymin)}"/>`;
+    s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" class="lab">${esc(xLabel)}</text>`;
+    s += `<text transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle" class="lab">${esc(yLabel)}</text>`;
+    if (opt.diagonal) s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(xmax)}" y2="${Y(xmax)}" stroke="var(--axis)" stroke-dasharray="4 4"/>`;
+    if (!opt.noTrend && pts.length >= 3) {
+      const mx = mean(xs), my = mean(ys); let sxy = 0, sxx = 0;
+      for (let i = 0; i < pts.length; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+      if (sxx) { const b = sxy / sxx, a = my - b * mx; const y0 = a + b * xmin, y1 = a + b * xmax; s += `<line x1="${X(xmin)}" y1="${Y(clamp(y0, ymin, ymax))}" x2="${X(xmax)}" y2="${Y(clamp(y1, ymin, ymax))}" stroke="var(--ink-3)" stroke-dasharray="5 5" stroke-width="1.5"/>`; }
+    }
+    for (const p of pts) s += `<circle class="hit" cx="${X(p.x)}" cy="${Y(p.y)}" r="14" data-tip="${esc(p.tip)}"/><circle class="mark" cx="${X(p.x)}" cy="${Y(p.y)}" r="6.5" fill="${p.color}" stroke="var(--surface)" stroke-width="2" pointer-events="none"/>`;
+    return s + '</svg>';
+  },
+  ticks(min, max, n) {
+    if (!(max > min)) max = min + 1;
+    const raw = (max - min) / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(m => m * p).find(s => s >= raw) || raw;
+    const out = []; for (let t = Math.floor(min / step) * step; t < max + step; t += step) { out.push(+t.toFixed(6)); if (t >= max) break; }
+    return out;
+  },
+  bindTips(root) {
+    const tip = $('#tip');
+    const showAt = (e, html) => { tip.innerHTML = html; tip.hidden = false; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; };
+    root.addEventListener('mousemove', e => { const h = e.target.closest('[data-tip]'); if (h) showAt(e, h.dataset.tip); else tip.hidden = true; });
+    root.addEventListener('mouseleave', () => { tip.hidden = true; });
+    root.addEventListener('click', e => { const h = e.target.closest('[data-tip]'); if (h) { showAt(e, h.dataset.tip); setTimeout(() => { tip.hidden = true; }, 2500); } });
+  },
+
+  // ----- export -----
+  csv(header, rows) {
+    const cell = v => { if (v == null || (typeof v === 'number' && !isFinite(v))) return ''; if (typeof v === 'number') return String(v); if (typeof v === 'boolean') return v ? '1' : '0'; const s = String(v); return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    return '﻿' + [header, ...rows].map(r => r.map(cell).join(';')).join('\r\n');
+  },
+  async download(filename, data) {
+    if (CAP.downloads) {
+      try { await CAP.downloads.save({ filename, data }); toast('Gespeichert: ' + filename); }
+      catch (e) { if (e && e.code !== 'declined') toast('Download nicht möglich (' + (e.code || 'Fehler') + ').'); }
+      return;
+    }
+    try {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'text/plain' })); a.download = filename; document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (e) { toast('Download nicht möglich.'); }
+  },
+  stamp() { const d = new Date(); return d.toISOString().slice(0, 16).replace(/[:T]/g, '-'); },
+  exportViews() {
+    const rows = [];
+    for (const s of (this.sessions || [])) for (const vw of (s.views || [])) {
+      const vid = S.videos.find(x => x.id === vw.videoId);
+      const dur = vw.durationSec || (vid && vid.durationSec) || 0;
+      rows.push([s.id, s.code || '', new Date(s.startedAt).toISOString(), s.test, s.repeat || false, s.demo, vw.videoId, vid ? vid.title : '', vid ? catName(vid.categoryId) : '', vid ? paceClass(vid) : '', vid ? vid.cutsPerMin : '', vid ? vid.motion : '', vid ? vid.asl : '',
+        +dur.toFixed(2), vw.i, vw.round, vw.revisit, +((vw.t0 || 0) / 1000).toFixed(1), +((vw.watchMs || 0) / 1000).toFixed(2), dur ? +((vw.watchMs || 0) / 1000 / dur).toFixed(3) : '', +((vw.dwellMs || 0) / 1000).toFixed(2),
+        vw.loops || 0, vw.completed, vw.maxPos, vw.exitPos, vw.liked, vw.pauses || 0, vw.commentTaps || 0, vw.shareTaps || 0, vw.sound]);
+    }
+    this.download('feedlabor-ansichten-' + this.stamp() + '.csv', this.csv(['session_id', 'nummer', 'session_start', 'test', 'wiederholung', 'beispiel', 'video_id', 'titel', 'kategorie', 'tempo', 'schnitte_pro_min', 'bewegungsindex', 'mittlere_einstellungslaenge_s', 'videolaenge_s', 'position_im_feed', 'runde', 'wiederholt', 'start_nach_s', 'schauzeit_s', 'schauanteil', 'verweildauer_s', 'wiederholungen', 'fertig_geschaut', 'max_position_s', 'ausstieg_bei_s', 'like', 'pausen', 'kommentar_tipps', 'teilen_tipps', 'ton_an'], rows));
+  },
+  exportSessions() {
+    const rows = (this.sessions || []).map(s => {
+      const ended = s.status === 'ended'; const endAt = ended ? s.endedAt : (s.lastSeenAt || s.startedAt);
+      const views = s.views || []; const first = views.filter(v => !v.revisit && (v.round || 1) === 1);
+      return [s.id, s.code || '', new Date(s.startedAt).toISOString(), new Date(endAt).toISOString(), +(((ended ? s.durationMs : endAt - s.startedAt) || 0) / 1000).toFixed(1), views.length, first.length, views.length ? Math.max(...views.map(v => v.round || 1)) : 1, views.filter(v => v.liked).length,
+        s.estimateMin ?? '', ended ? 'fertig' : 'abgebrochen', s.test, s.repeat || false, s.demo, s.device ? s.device.w + 'x' + s.device.h : ''];
+    });
+    this.download('feedlabor-sessions-' + this.stamp() + '.csv', this.csv(['session_id', 'nummer', 'start', 'ende', 'dauer_s', 'videos', 'videos_erstmalig', 'runden', 'likes', 'geschaetzt_min', 'ende_durch', 'test', 'wiederholung', 'beispiel', 'bildschirm'], rows));
+  },
+  exportJson() {
+    const data = { exportedAt: new Date().toISOString(), config: S.config, videos: S.videos.map(v => { const c = Object.assign({}, v); delete c.thumb; delete c.sources; return c; }), sessions: this.sessions || [] };
+    this.download('feedlabor-export-' + this.stamp() + '.json', JSON.stringify(data, null, 1));
+  },
+};
+
+boot();
+
+</script>
+
+</body>
+</html>
