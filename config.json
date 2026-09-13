@@ -1,5 +1,5 @@
 {
-  "endpoint": "",
+  "endpoint": "https://script.google.com/macros/s/AKfycbwYo-7xHyd4tN3JtWpBo5UGF5daoa9EfJ4r7a6IwcEBndnYYbFtvXy4XNd0NYG9_9bp/exec",
   "settings": {
     "askEstimate": true,
     "endless": true,
