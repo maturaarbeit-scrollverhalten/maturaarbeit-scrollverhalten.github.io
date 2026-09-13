@@ -264,7 +264,8 @@ textarea { resize: vertical; min-height: 70px; }
 .slide .loading { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,.6); font-size: 13px; pointer-events: none; }
 .slide.ready .loading { display: none; }
 
-.slide iframe { position: absolute; left: -2%; top: -7%; width: 116%; height: 116%; border: 0; display: block; background: #000; }
+/* geometry (width/height/left/top) is set per slide by feed.fitEmbed(): the iframe is taller than the slide so TikTok's own header, caption, buttons and cookie banner stay out of view */
+.slide iframe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 0; display: block; background: #000; }
 .slide.embed .tapzone { background: transparent; }
 .slide.embed .shade { height: 32%; background: linear-gradient(to top, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0)); }
 .slide.passthrough .tapzone { pointer-events: none; }
@@ -896,6 +897,7 @@ class EmbedPlayer {
 const EMBED_BASE = (window.FL_ONLINE && window.FL_ONLINE.embedBase) || 'https://www.tiktok.com/player/v1/';
 const EMBED_ORIGIN = new URL(EMBED_BASE, location.href).origin;
 const EMBED_PARAMS = 'controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&loop=1&autoplay=1&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
+const EMBED_PAD = 420; // px of the player hidden above and below the slide (header, caption, cookie banner)
 
 // ---------- feed engine ----------
 const feed = {
@@ -928,6 +930,7 @@ const feed = {
     }
     this.addRound();
     show('feed');
+    this.fitAllEmbeds(); // slides were built while the feed screen was still hidden
     store.saveSession(S.session).catch(() => {});
     this.lastTick = performance.now();
     cancelAnimationFrame(this.raf);
@@ -1023,8 +1026,23 @@ const feed = {
     cmtBtn.addEventListener('click', () => { if (this.view && this.view.i === i) this.view.commentTaps = (this.view.commentTaps || 0) + 1; toast('Kommentare sind in dieser Studie ausgeschaltet.'); this.prime(); });
     shareBtn.addEventListener('click', () => { if (this.view && this.view.i === i) this.view.shareTaps = (this.view.shareTaps || 0) + 1; toast('Teilen ist in dieser Studie ausgeschaltet.'); this.prime(); });
     $('#feed').append(slide);
+    if (v.embedId) this.fitEmbed(slide, media);
     this.observer.observe(slide);
   },
+
+  // TikTok's player keeps its video centred and letterboxes with a blurred fill. We make the iframe
+  // much taller than the slide so the header (avatar, username), the bottom chrome (caption, buttons)
+  // and the cookie banner all land in the hidden top/bottom padding – only the video is visible.
+  fitEmbed(slide, iframe) {
+    const Sw = slide.clientWidth || $('#feed').clientWidth, Sh = slide.clientHeight || $('#feed').clientHeight;
+    if (!Sw || !Sh) return;
+    const W = Math.ceil(1.03 * Math.max(Sw, Sh * 9 / 16));
+    const Hv = W * 16 / 9, P = EMBED_PAD, H = Math.ceil(Hv + 2 * P);
+    iframe.style.width = W + 'px'; iframe.style.height = H + 'px';
+    iframe.style.left = Math.round((Sw - W) / 2) + 'px';
+    iframe.style.top = Math.round(-(P + (Hv - Sh) / 2)) + 'px';
+  },
+  fitAllEmbeds() { for (const s of this.slides) if (s.p && s.p.kind === 'embed') this.fitEmbed(s.el, s.p.f); },
 
   addEndSlide() {
     const i = this.slides.length;
@@ -1291,6 +1309,11 @@ function bindKiosk() {
     else if (s && s.p && !s.el.classList.contains('paused')) s.p.play().catch(() => {});
   });
   window.addEventListener('pagehide', () => { if (S.session && S.session.status === 'running') { S.session.lastSeenAt = Date.now(); if (isOnline()) remote.beacon(S.session); else feed.saveNow(); } });
+  let fitT = null;
+  const refit = () => { clearTimeout(fitT); fitT = setTimeout(() => feed.fitAllEmbeds(), 120); };
+  window.addEventListener('resize', refit);
+  window.addEventListener('orientationchange', refit);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', refit);
   // keyboard scrolling for desktop testing
   document.addEventListener('keydown', e => {
     if ($('#screen-feed').hidden || !$('#modal').hidden) return;
