@@ -1,10 +1,21 @@
 <!doctype html>
 <html lang="de">
 <head>
-<title>Feedlabor</title>
+<title>Maturaarbeit – Studie zum Scrollverhalten</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="description" content="Anonyme Studie für eine Maturaarbeit: 5–10 Minuten am Handy durch einen Video-Feed scrollen. Kein Name, kein Login – gemessen wird nur, wie lange welche Videos angeschaut werden.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maturaarbeit">
+<meta property="og:title" content="Maturaarbeit – Studie zum Scrollverhalten">
+<meta property="og:description" content="Anonyme Studie für eine Maturaarbeit: 5–10 Minuten am Handy durch einen Video-Feed scrollen. Kein Name, kein Login – gemessen wird nur, wie lange welche Videos angeschaut werden.">
+<meta property="og:locale" content="de_CH">
+<meta property="og:url" content="https://kvara-collab.github.io/maturaarbeit-scrollverhalten/">
+<meta property="og:image" content="https://kvara-collab.github.io/maturaarbeit-scrollverhalten/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -961,7 +972,9 @@ const feed = {
     $('#btn-sound').hidden = true;
     const f = $('#feed'); f.replaceChildren(); f.scrollTop = 0;
     this.observer = new IntersectionObserver(entries => {
-      for (const e of entries) if (e.isIntersecting && e.intersectionRatio >= 0.6) this.activate(+e.target.dataset.i);
+      // a collapsed viewport (0 px high, e.g. a hidden/background window) makes every slide "fully visible" – never count those
+      if (entries[0] && entries[0].rootBounds && entries[0].rootBounds.height < 50) return;
+      for (const e of entries) if (e.isIntersecting && e.intersectionRatio >= 0.6 && e.boundingClientRect.height >= 50) this.activate(+e.target.dataset.i);
     }, { root: f, threshold: [0.6] });
     if (!this.msgBound) {
       this.msgBound = true;
@@ -1202,7 +1215,8 @@ const feed = {
     this.raf = requestAnimationFrame(t => this.tick(t));
   },
 
-  saveSoon() { clearTimeout(this.saveT); this.saveT = setTimeout(() => this.saveNow(), isOnline() ? 6000 : 500); },
+  // online: intermediate saves are only a safety net (the final save carries everything); 20 s keeps the Apps Script lock free for a whole class at once
+  saveSoon() { clearTimeout(this.saveT); this.saveT = setTimeout(() => this.saveNow(), isOnline() ? 20000 : 500); },
   saveNow() { clearTimeout(this.saveT); if (S.session) { S.session.lastSeenAt = Date.now(); store.saveSession(S.session).catch(() => {}); } },
 
   stop() {
