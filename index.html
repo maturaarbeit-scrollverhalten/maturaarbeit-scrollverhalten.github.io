@@ -29,7 +29,7 @@
   --crit: #d03b3b;
   --focus: #2a78d6;
   --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
-  --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948; --s9: #7a2e8b; --s10: #38a391;
   --p1: #86b6ef; --p2: #2a78d6; --p3: #0d366b;
   --grid: #e1e0d9;
   --axis: #c3c2b7;
@@ -61,7 +61,7 @@
     --crit: #e66767;
     --focus: #3987e5;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
-    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767; --s9: #9543c6; --s10: #3ca694;
     --p1: #184f95; --p2: #3987e5; --p3: #9ec5f4;
     --grid: #2c2c2a;
     --axis: #383835;
@@ -85,7 +85,7 @@
   --crit: #e66767;
   --focus: #3987e5;
   --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
-  --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767; --s9: #9543c6; --s10: #3ca694;
   --p1: #184f95; --p2: #3987e5; --p3: #9ec5f4;
   --grid: #2c2c2a;
   --axis: #383835;
@@ -343,6 +343,8 @@ textarea { resize: vertical; min-height: 70px; }
 .answer h3 { font-size: 18px; }
 .answer p { color: var(--ink-2); }
 .answer p b { color: var(--ink); }
+.card.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 16px; }
+.card.toolbar .small { flex: 1 1 260px; }
 .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 14px; }
 .chart { padding: 16px 16px 12px; display: grid; gap: 8px; align-content: start; min-width: 0; }
 .chart.wide { grid-column: 1 / -1; }
@@ -356,11 +358,16 @@ textarea { resize: vertical; min-height: 70px; }
 .chart .svgbox { min-height: 40px; }
 .chart svg .grid { stroke: var(--grid); stroke-width: 1; }
 .chart svg .axis { stroke: var(--axis); stroke-width: 1; }
+.chart svg .tick { stroke: var(--axis); stroke-width: 1; }
+.chart svg .tickl { fill: var(--ink-3); font-size: 11px; }
+.chart svg .track { fill: var(--line); }
+.chart svg rect.mark { fill: var(--s1); }
 .chart svg .mark { transition: opacity .12s; }
 .chart svg .hit { fill: transparent; cursor: default; }
 .chart svg .hit:hover + .mark, .chart svg .hit:hover ~ .mark { opacity: .8; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart .legend svg.ico { width: 12px; height: 12px; display: inline-block; flex: none; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .empty { padding: 34px 20px; text-align: center; color: var(--ink-2); display: grid; gap: 8px; justify-items: center; }
 .empty b { color: var(--ink); font-family: var(--font-display); font-size: 18px; }
@@ -391,7 +398,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--surface-2) 60%, transpa
 @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } .end-stats { grid-template-columns: 1fr 1fr; } }
 
 /* online version */
+.kiosk.warm { background: radial-gradient(120% 70% at 50% -10%, #3a1a3a 0%, #1a0f1d 45%, #0d0b10 100%); }
 .start-online { display: grid; gap: 14px; justify-items: center; width: 100%; }
+.trust { display: grid; gap: 8px; width: 100%; text-align: left; }
+.trust div { display: flex; gap: 12px; align-items: center; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08); border-radius: 14px; padding: 11px 14px; font-size: 14px; line-height: 1.35; color: var(--k-ink-2); }
+.trust b { color: #fff; font-weight: 600; }
+.trust svg { width: 22px; height: 22px; flex: none; color: var(--k-accent); }
 .code-box { display: grid; gap: 4px; justify-items: center; padding: 12px 22px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 14px; background: rgba(255, 255, 255, .06); }
 .code-box .l { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--k-ink-2); font-weight: 600; }
 .code-box .c { font-family: var(--font-display); font-weight: 800; font-size: 34px; letter-spacing: .18em; line-height: 1; padding-left: .18em; }
@@ -408,17 +420,23 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 <div id="app">
 
   <!-- ===== Start (kiosk) ===== -->
-  <section id="screen-start" class="screen kiosk">
+  <section id="screen-start" class="screen kiosk warm">
     <div class="kiosk-card">
+      <div class="eyebrow" id="start-eyebrow" style="color:var(--k-ink-2)" hidden>Maturaarbeit · Experiment zum Scrollverhalten</div>
       <div class="wordmark">Feed<i>labor</i></div>
-      <p class="lead">Scroll wie in einer echten App.<br>Hör auf, wann du willst.</p>
-      <button id="btn-start" class="btn-big">Los geht's</button>
+      <p class="lead" id="start-lead">Scroll wie in einer echten App.<br>Hör auf, wann du willst.</p>
+      <button id="btn-start" class="btn-big accent">Los geht's</button>
       <p class="note" id="start-note-kiosk">Anonym, ohne Anmeldung. Oben rechts findest du jederzeit „Fertig“.</p>
       <div id="start-online" class="start-online" hidden>
+        <div class="trust">
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span><b>Anonym.</b> Kein Name, kein Login – nur deine Zufallsnummer.</span></div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>Gemessen wird nur,</b> wie lange du welche Videos schaust.</span></div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 12h8M8 16h5"/></svg><span><b>Für eine Maturaarbeit.</b> Schulprojekt, keine Werbung, kein Verkauf von Daten.</span></div>
+        </div>
         <div class="code-box"><span class="l">Deine anonyme Nummer</span><span class="c" id="start-code">····</span></div>
-        <p class="note">Anonym und freiwillig: Gemessen wird nur, wie lange du welche Videos schaust – kein Name, kein Login. Mit „Los geht’s“ bist du einverstanden, dass diese Daten für eine Maturaarbeit ausgewertet werden. Oben rechts findest du jederzeit „Fertig“.</p>
+        <p class="note">Mit „Los geht’s“ bist du einverstanden, dass deine anonymen Daten für die Arbeit ausgewertet werden. Abbrechen geht jederzeit über „Fertig“ oben rechts.</p>
         <div id="start-participated" class="participated" hidden>
-          <b>Du hast schon mitgemacht</b> (Nummer <span id="start-participated-code"></span>) – danke! Wenn du trotzdem nochmal willst, wird das als Wiederholung gezählt.
+          <b>Du hast schon mitgemacht</b> (Nummer <span id="start-participated-code"></span>) – danke! Nochmal scrollen zählt als Wiederholung.
           <button id="btn-participated-again" class="link">Trotzdem nochmal</button>
         </div>
       </div>
@@ -454,11 +472,13 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
       <button id="btn-estimate-skip" class="link">Weiss ich nicht</button>
     </div>
     <div class="kiosk-card" id="end-thanks" hidden>
-      <div class="wordmark" style="font-size:34px">Danke!</div>
+      <div class="wordmark" style="font-size:34px" id="end-title">Danke!</div>
       <p class="lead" id="end-lead">Deine Daten sind anonym gespeichert.</p>
       <div class="end-stats" id="end-stats"></div>
       <div id="end-code" class="code-box" hidden><span class="l">Deine anonyme Nummer</span><span class="c" id="end-code-value"></span></div>
       <button id="btn-next" class="btn-big">Nächste Person</button>
+      <button id="btn-close" class="btn-big accent" hidden>Fertig</button>
+      <p class="small" id="end-closed" style="color:var(--k-ink-2)" hidden>Du kannst die Seite jetzt schliessen.</p>
       <button id="btn-again" class="link" hidden>Nochmal von vorn</button>
     </div>
   </section>
@@ -539,6 +559,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
             <button id="btn-csv-views" class="btn sm">CSV Ansichten</button>
             <button id="btn-csv-sessions" class="btn sm">CSV Sessions</button>
             <button id="btn-json" class="btn sm">JSON alles</button>
+            <button id="btn-reset" class="btn sm danger" title="Alle Messungen löschen und von vorn beginnen">Zurücksetzen</button>
           </div>
         </div>
         <div class="filters">
@@ -603,6 +624,16 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
           </div>
           <p class="muted small">Zum Ausprobieren, ohne die Statistik zu verfälschen: Link mit <code>?test=1</code> öffnen. Solche Sessions werden als Test markiert.</p>
         </div>
+        <div class="card pad stack" id="cuts-card">
+          <h3>Schnitte pro Video (Tempo)</h3>
+          <p class="muted small">Bei eingebetteten TikToks kann Feedlabor die Bildwechsel nicht selbst zählen. Schau jedes Video einmal an und trag ein, wie viele <b>Schnitte</b> (harte Bildwechsel) du zählst. Daraus rechnet Feedlabor Schnitte pro Minute und das Tempo: ab <b id="cuts-fast">20</b>/min «schnell», bis <b id="cuts-slow">8</b>/min «langsam». Die Zahlen erscheinen sofort in der Statistik auf diesem Gerät; damit sie überall gelten, unten kopieren und in <code>config.json</code> eintragen (oder mir schicken).</p>
+          <div class="tbl-wrap"><table id="cuts-table"></table></div>
+          <div class="row">
+            <button id="btn-cuts-copy" class="btn sm">Für config.json kopieren</button>
+            <button id="btn-cuts-clear" class="btn sm ghost">Eingaben auf diesem Gerät löschen</button>
+          </div>
+          <pre id="cuts-json" class="small muted" style="white-space:pre-wrap;margin:0" hidden></pre>
+        </div>
         <div class="card pad stack">
           <h3>Videos in dieser Version</h3>
           <div id="setup-videos" class="vlist"></div>
@@ -621,7 +652,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
   <div id="tip" class="tip" hidden></div>
 </div>
 
-<script>window.FL_ONLINE = {"endpoint": "", "config": {"categories": [{"id": "humor", "name": "Humor & Sketch", "slot": 0}, {"id": "wissen", "name": "Wissen & Erklärung", "slot": 1}, {"id": "emotion", "name": "Storytime & Drama", "slot": 2}, {"id": "musik", "name": "Musik & Tanz", "slot": 3}, {"id": "satisfying", "name": "Satisfying & ASMR", "slot": 5}, {"id": "sport", "name": "Sport & Gaming (optional)", "slot": 4}, {"id": "news", "name": "News & Politik", "slot": 6}], "pace": {"fastMin": 20, "slowMax": 8}, "settings": {"askEstimate": true, "endless": true, "maxRounds": 3, "showCaptions": true, "soundOn": true, "testMode": false, "pin": ""}, "pace_overrides": {"k1-01": "mittel", "k1-02": "langsam", "k1-03": "mittel", "k1-04": "schnell", "k2-01": "schnell", "k2-02": "mittel", "k2-03": "schnell", "k2-04": "mittel", "k3-01": "mittel", "k3-02": "langsam", "k3-03": "langsam", "k3-04": "langsam", "k4-01": "langsam", "k4-02": "langsam", "k4-03": "langsam", "k4-04": "langsam", "k5-01": "langsam", "k5-02": "schnell", "k5-03": "schnell", "k5-04": "schnell", "k6-01": "mittel", "k6-02": "mittel", "k6-03": "mittel", "k6-04": "mittel"}}, "videos": [{"id": "k1-01", "embedId": "7684318467079687456", "tiktokUrl": "https://www.tiktok.com/@denooo.esn/video/7684318467079687456", "title": "Präsentation in der Schule", "handle": "denooo.esn", "caption": "markiert alle eure Schatzis… #fyp #präsentation #schule", "categoryId": "humor", "paceOverride": null, "durationSec": 32, "width": 576, "height": 1024, "addedAt": 1789325824499, "demo": false, "kind": "embed", "stats": {"likes": 96100, "comments": 147, "shares": 13000, "plays": 1700000}, "music": "Originalton"}, {"id": "k1-02", "embedId": "7514357609462271254", "tiktokUrl": "https://www.tiktok.com/@jerryvsan/video/7514357609462271254", "title": "Stand-up: Studieren", "handle": "jerryvsan", "caption": "Studieren, was soll das sein hä?! Bei Joeyscomedyclub ❤️ #standupcomedy #comedy", "categoryId": "humor", "paceOverride": null, "durationSec": 24, "width": 576, "height": 1024, "addedAt": 1789325825499, "demo": false, "kind": "embed", "stats": {"likes": 31000, "comments": 152, "shares": 7439, "plays": 500800}, "music": "Originalton"}, {"id": "k1-03", "embedId": "7558429498069224726", "tiktokUrl": "https://www.tiktok.com/@abi_28_igs/video/7558429498069224726", "title": "Schultoiletten POV", "handle": "abi_28_igs", "caption": "Toiletten in unserer Schule 🚽 #fyp #schule #pov", "categoryId": "humor", "paceOverride": null, "durationSec": 11, "width": 576, "height": 1024, "addedAt": 1789325826499, "demo": false, "kind": "embed", "stats": {"likes": 12600, "comments": 71, "shares": 3379, "plays": 449200}, "music": "Originalton – German Memes"}, {"id": "k1-04", "embedId": "7664107133188787476", "tiktokUrl": "https://www.tiktok.com/@kosofunny/video/7664107133188787476", "title": "Trampolin-Fails", "handle": "kosofunny", "caption": "Ranking best trampoline fails | #funny #fyp #ranking #fail", "categoryId": "humor", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325827499, "demo": false, "kind": "embed", "stats": {"likes": 410600, "comments": 1606, "shares": 161400, "plays": 14300000}, "music": "Originalton – Kosofunny"}, {"id": "k2-01", "embedId": "7481191051483483414", "tiktokUrl": "https://www.tiktok.com/@quarks/video/7481191051483483414", "title": "Quarks: Passivrauchen", "handle": "quarks", "caption": "🚨Achtung🚨 Markiere deine Freunde! 🚬 #quarks #lernenmittiktok #passivrauchen #snus", "categoryId": "wissen", "paceOverride": null, "durationSec": 40, "width": 576, "height": 1024, "addedAt": 1789325828499, "demo": false, "kind": "embed", "stats": {"likes": 26700, "comments": 138, "shares": 7709, "plays": 561900}, "music": "Originalton"}, {"id": "k2-02", "embedId": "7523193269556104470", "tiktokUrl": "https://www.tiktok.com/@mrwissen2go/video/7523193269556104470", "title": "Max Mustermann in Europa", "handle": "mrwissen2go", "caption": "#mrwissen2go #maxmustermann #sprache #europa", "categoryId": "wissen", "paceOverride": null, "durationSec": 18, "width": 576, "height": 1024, "addedAt": 1789325829499, "demo": false, "kind": "embed", "stats": {"likes": 103300, "comments": 359, "shares": 6682, "plays": 1300000}, "music": "Originalton"}, {"id": "k2-03", "embedId": "7668982016221728032", "tiktokUrl": "https://www.tiktok.com/@funk/video/7668982016221728032", "title": "Superhelden & Paragraf 39", "handle": "funk", "caption": "Superhelden in Deutschland haben es schwer. Vorteil aber: Paragraf 39 des Bundesnaturschutzgesetzes …", "categoryId": "wissen", "paceOverride": null, "durationSec": 26, "width": 576, "height": 1024, "addedAt": 1789325830499, "demo": false, "kind": "embed", "stats": {"likes": 121100, "comments": 625, "shares": 30500, "plays": 1100000}, "music": "Originalton"}, {"id": "k2-04", "embedId": "7673232930256244001", "tiktokUrl": "https://www.tiktok.com/@niklaskolorz/video/7673232930256244001", "title": "Sonnenfinsternis", "handle": "niklaskolorz", "caption": "WAS FÜR EIN MOMENT 😍 TOTAL TOTALITY! #sonnenfinsternis", "categoryId": "wissen", "paceOverride": null, "durationSec": 33, "width": 576, "height": 1024, "addedAt": 1789325831499, "demo": false, "kind": "embed", "stats": {"likes": 42600, "comments": 399, "shares": 2225, "plays": 301800}, "music": "Originalton"}, {"id": "k3-01", "embedId": "7676512578104790305", "tiktokUrl": "https://www.tiktok.com/@ringlervids/video/7676512578104790305", "title": "Drei Brüder, drei Autos", "handle": "ringlervids", "caption": "Drei Brüder. Drei Autos. Und eine ziemlich schlechte Entscheidung #deutschtiktok #comedydeutsch", "categoryId": "emotion", "paceOverride": null, "durationSec": 52, "width": 576, "height": 1024, "addedAt": 1789325832499, "demo": false, "kind": "embed", "stats": {"likes": 36400, "comments": 49, "shares": 636, "plays": 1400000}, "music": "Trend das Frutas"}, {"id": "k3-02", "embedId": "7580315928366189846", "tiktokUrl": "https://www.tiktok.com/@ichbinjuli10/video/7580315928366189846", "title": "Meinung: „Komm doch…“", "handle": "ichbinjuli10", "caption": "Komm doch… #meinung #österreich #sprache #fyp", "categoryId": "emotion", "paceOverride": null, "durationSec": 59, "width": 576, "height": 1024, "addedAt": 1789325833499, "demo": false, "kind": "embed", "stats": {"likes": 94500, "comments": 2409, "shares": 13700, "plays": 968000}, "music": "Originalton"}, {"id": "k3-03", "embedId": "7678616666518949153", "tiktokUrl": "https://www.tiktok.com/@aileen.weibeler/video/7678616666518949153", "title": "Meinungen aushalten", "handle": "aileen.weibeler", "caption": "Wir müssen unterschiedliche Meinungen aushalten können ohne uns zu beleidigen.", "categoryId": "emotion", "paceOverride": null, "durationSec": 26, "width": 576, "height": 1024, "addedAt": 1789325834499, "demo": false, "kind": "embed", "stats": {"likes": 17900, "comments": 1483, "shares": 839, "plays": 850400}, "music": "Originalton"}, {"id": "k3-04", "embedId": "7462376454463048982", "tiktokUrl": "https://www.tiktok.com/@alain.frei/video/7462376454463048982", "title": "Sorry, das musste sein", "handle": "alain.frei", "caption": "Sorry, das musste einfach sein. 😂", "categoryId": "emotion", "paceOverride": null, "durationSec": 16, "width": 576, "height": 1024, "addedAt": 1789325835499, "demo": false, "kind": "embed", "stats": {"likes": 286900, "comments": 10600, "shares": 31800, "plays": 3900000}, "music": "Originalton"}, {"id": "k4-01", "embedId": "7681036016341372192", "tiktokUrl": "https://www.tiktok.com/@frida_tune/video/7681036016341372192", "title": "Gesangs-Cover", "handle": "frida_tune", "caption": "washing machine heart – @Mitski 🎤⭐️ #singing #cover #song", "categoryId": "musik", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1789325836499, "demo": false, "kind": "embed", "stats": {"likes": 373900, "comments": 1437, "shares": 4852, "plays": 2600000}, "music": "Originalton"}, {"id": "k4-02", "embedId": "7683455708292975894", "tiktokUrl": "https://www.tiktok.com/@dancingqueensbabe/video/7683455708292975894", "title": "Dance in der Schule", "handle": "dancingqueensbabe", "caption": "DQB IN THA HOUSE 🔥 #fyp #dance #school", "categoryId": "musik", "paceOverride": null, "durationSec": 10, "width": 576, "height": 1024, "addedAt": 1789325837499, "demo": false, "kind": "embed", "stats": {"likes": 136000, "comments": 165, "shares": 7458, "plays": 1100000}, "music": "Originalton"}, {"id": "k4-03", "embedId": "7495016131279834390", "tiktokUrl": "https://www.tiktok.com/@philschallermusic/video/7495016131279834390", "title": "Gesang: Dauerschleife", "handle": "philschallermusic", "caption": "Welchen Song hört ihr in Dauerschleife? 🎧✨ #singen #gesang", "categoryId": "musik", "paceOverride": null, "durationSec": 22, "width": 576, "height": 1024, "addedAt": 1789325838499, "demo": false, "kind": "embed", "stats": {"likes": 76400, "comments": 511, "shares": 1480, "plays": 608800}, "music": "Originalton"}, {"id": "k4-04", "embedId": "7669236167241370893", "tiktokUrl": "https://www.tiktok.com/@honestj/video/7669236167241370893", "title": "Duo-Dance", "handle": "honestj", "caption": "Don’t you tiptoe 🔥 #fyp #dance #duo", "categoryId": "musik", "paceOverride": null, "durationSec": 29, "width": 576, "height": 1024, "addedAt": 1789325839499, "demo": false, "kind": "embed", "stats": {"likes": 688300, "comments": 1813, "shares": 56500, "plays": 10200000}, "music": "Originalton"}, {"id": "k5-01", "embedId": "7636161275612908830", "tiktokUrl": "https://www.tiktok.com/@_sweetzori/video/7636161275612908830", "title": "Jelly Cake", "handle": "_sweetzori", "caption": "This one was struggle…💜 #jellycake #demolding #satisfyingvideo", "categoryId": "satisfying", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325840499, "demo": false, "kind": "embed", "stats": {"likes": 1700000, "comments": 1422, "shares": 21400, "plays": 29700000}, "music": "Originalton"}, {"id": "k5-02", "embedId": "7662383012637658401", "tiktokUrl": "https://www.tiktok.com/@lifeisfullofgoodies/video/7662383012637658401", "title": "Ofenpfannkuchen", "handle": "lifeisfullofgoodies", "caption": "Wenn’s schnell gehen muss, aber trotzdem richtig lecker sein soll: herzhafter Ofenpfannkuchen 🥞", "categoryId": "satisfying", "paceOverride": null, "durationSec": 18, "width": 576, "height": 1024, "addedAt": 1789325841499, "demo": false, "kind": "embed", "stats": {"likes": 231300, "comments": 1254, "shares": 63000, "plays": 6000000}, "music": "Originalton"}, {"id": "k5-03", "embedId": "7675795908096724256", "tiktokUrl": "https://www.tiktok.com/@lenadiore/video/7675795908096724256", "title": "Aufräumen nach Party", "handle": "lenadiore", "caption": "War noch nie ne Partymaus 🐭 #cleanup #cleantok #putzen", "categoryId": "satisfying", "paceOverride": null, "durationSec": 25, "width": 576, "height": 1024, "addedAt": 1789325842499, "demo": false, "kind": "embed", "stats": {"likes": 61500, "comments": 1392, "shares": 11500, "plays": 1000000}, "music": "Originalton"}, {"id": "k5-04", "embedId": "7598216502822653206", "tiktokUrl": "https://www.tiktok.com/@sevali_cake/video/7598216502822653206", "title": "Himbeer-Pistazien-Törtchen", "handle": "sevali_cake", "caption": "Himbeer-Pistazien-Törtchen 🍰 Rezept in den Kommentaren #baking #cake", "categoryId": "satisfying", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1789325843499, "demo": false, "kind": "embed", "stats": {"likes": 11500, "comments": 56, "shares": 4036, "plays": 473500}, "music": "Originalton"}, {"id": "k6-01", "embedId": "7685049115553795351", "tiktokUrl": "https://www.tiktok.com/@tagesschau/video/7685049115553795351", "title": "tagesschau: Drohnen im Ukraine-Krieg", "handle": "tagesschau", "caption": "Seit Beginn des russischen Angriffskriegs gegen die Ukraine zeigt sich: Drohnen werden immer wichtiger – in der Luft, auf dem Wasser und am Boden.", "categoryId": "news", "paceOverride": null, "durationSec": 39, "width": 576, "height": 1024, "addedAt": 1789327064579, "demo": false, "kind": "embed", "stats": {"likes": 421, "comments": 10, "shares": 5, "plays": 11900}, "music": "Originalton – tagesschau"}, {"id": "k6-02", "embedId": "7684671349863779606", "tiktokUrl": "https://www.tiktok.com/@srfnews/video/7684671349863779606", "title": "SRF: Russland und der Krieg gegen die Ukraine", "handle": "srfnews", "caption": "Viele Russinnen und Russen konnten den Krieg gegen die Ukraine lange ausblenden. Das könnte sich bald ändern.", "categoryId": "news", "paceOverride": null, "durationSec": 43, "width": 576, "height": 1024, "addedAt": 1789327065579, "demo": false, "kind": "embed", "stats": {"likes": 265, "comments": 17, "shares": 3, "plays": 7860}, "music": "Originalton"}, {"id": "k6-03", "embedId": "7681316341235715361", "tiktokUrl": "https://www.tiktok.com/@zdfheute/video/7681316341235715361", "title": "ZDF heute: Massnahmen gegen Russland", "handle": "zdfheute", "caption": "Aussenminister Wadephul hat die Massnahmen gegen Russland vorgestellt – unter anderem muss das russische Konsulat in Bonn schliessen.", "categoryId": "news", "paceOverride": null, "durationSec": 58, "width": 576, "height": 1024, "addedAt": 1789327066579, "demo": false, "kind": "embed", "stats": {"likes": 67900, "comments": 2793, "shares": 9238, "plays": 1700000}, "music": "Originalton – ZDFheute"}, {"id": "k6-04", "embedId": "7684615936669764886", "tiktokUrl": "https://www.tiktok.com/@tagesschau/video/7684615936669764886", "title": "tagesschau: Drohnenangriff auf Öl-Pipeline", "handle": "tagesschau", "caption": "Nach einem Drohnen-Angriff hat Saudi-Arabien eine wichtige Öl-Pipeline abgeschaltet.", "categoryId": "news", "paceOverride": null, "durationSec": 27, "width": 576, "height": 1024, "addedAt": 1789327067579, "demo": false, "kind": "embed", "stats": {"likes": 4230, "comments": 0, "shares": 222, "plays": 146100}, "music": "Originalton – tagesschau"}]};</script>
+<script>window.FL_ONLINE = {"endpoint": "https://script.google.com/macros/s/AKfycbwYo-7xHyd4tN3JtWpBo5UGF5daoa9EfJ4r7a6IwcEBndnYYbFtvXy4XNd0NYG9_9bp/exec", "config": {"categories": [{"id": "facts", "name": "Facts", "slot": 0}, {"id": "humor", "name": "Humor", "slot": 3}, {"id": "sport", "name": "Sport", "slot": 5}, {"id": "musik", "name": "Musik", "slot": 4}, {"id": "kunst", "name": "Kunst", "slot": 8}, {"id": "reisen", "name": "Reisen & Orte", "slot": 9}], "pace": {"fastMin": 20, "slowMax": 8}, "settings": {"askEstimate": false, "endless": false, "maxRounds": 1, "showCaptions": true, "soundOn": true, "testMode": false, "pin": ""}, "pace_overrides": {"f-01": "schnell", "f-02": "schnell", "f-03": "mittel", "f-04": "mittel", "f-05": "langsam", "f-06": "langsam", "h-01": "schnell", "h-02": "schnell", "h-03": "mittel", "h-04": "mittel", "h-05": "langsam", "h-06": "langsam", "sp-01": "schnell", "sp-02": "schnell", "sp-03": "mittel", "sp-04": "mittel", "sp-05": "langsam", "sp-06": "langsam", "m-01": "schnell", "m-02": "schnell", "m-03": "mittel", "m-04": "mittel", "m-05": "langsam", "m-06": "langsam", "k-01": "schnell", "k-02": "schnell", "k-03": "mittel", "k-04": "mittel", "k-05": "langsam", "k-06": "langsam", "r-01": "schnell", "r-02": "schnell", "r-03": "mittel", "r-04": "mittel", "r-05": "langsam", "r-06": "langsam"}, "cuts_per_min": {}}, "videos": [{"id": "f-01", "embedId": "7668982016221728032", "tiktokUrl": "https://www.tiktok.com/@funk/video/7668982016221728032", "title": "funk: Superhelden & Paragraf 39", "handle": "funk", "caption": "Superhelden in Deutschland haben es schwer. Vorteil aber: Durch Paragraf 39 des Bundesnaturschutzgesetzes ist das Töten von Insekten … #funk #wissen", "categoryId": "facts", "paceOverride": null, "durationSec": 26, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 121900, "comments": 624, "shares": 30600, "plays": 1100000}, "music": "Originalton – funk"}, {"id": "f-02", "embedId": "7675339415593569569", "tiktokUrl": "https://www.tiktok.com/@terrax/video/7675339415593569569", "title": "Terra X: Alles hat ein Ende, nur das Brot hat zwei", "handle": "terrax", "caption": "Alles hat ein Ende nur das Brot hat zwei. #TerraX #ZDF #NoelInKarten #Brot #Sprache", "categoryId": "facts", "paceOverride": null, "durationSec": 31, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 40600, "comments": 3585, "shares": 2341, "plays": 817900}, "music": "Originalton – Terra X"}, {"id": "f-03", "embedId": "7523193269556104470", "tiktokUrl": "https://www.tiktok.com/@mrwissen2go/video/7523193269556104470", "title": "MrWissen2go: Max Mustermann in Europa", "handle": "mrwissen2go", "caption": "#mrwissen2go #maxmustermann #sprache #europa", "categoryId": "facts", "paceOverride": null, "durationSec": 18, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 103400, "comments": 363, "shares": 6683, "plays": 1300000}, "music": "Originalton – mrwissen2go"}, {"id": "f-04", "embedId": "7625193982439542048", "tiktokUrl": "https://www.tiktok.com/@terrax/video/7625193982439542048", "title": "Terra X: Was hält ein Schiff an Ort und Stelle?", "handle": "terrax", "caption": "Was hält ein Schiff wirklich an Ort und Stelle? 🤯 Mindblow incoming … ⚓️⛓️ #danistechtalk #zdf #terrax", "categoryId": "facts", "paceOverride": null, "durationSec": 52, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 75500, "comments": 226, "shares": 655, "plays": 1600000}, "music": "Originalton – Terra X"}, {"id": "f-05", "embedId": "7578454628556213526", "tiktokUrl": "https://www.tiktok.com/@die.juristen/video/7578454628556213526", "title": "Die Juristen: Wie viel Platz muss ein Schwein haben?", "handle": "die.juristen", "caption": "Wie viel Platz muss ein Schwein haben? Recht erklärt – die Flächen aus dem Video sind Mindestflächen. #recht #jura", "categoryId": "facts", "paceOverride": null, "durationSec": 34, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 54100, "comments": 566, "shares": 4024, "plays": 905400}, "music": "Originalton – Die Juristen"}, {"id": "f-06", "embedId": "7481191051483483414", "tiktokUrl": "https://www.tiktok.com/@quarks/video/7481191051483483414", "title": "Quarks: Passivrauchen & Snus", "handle": "quarks", "caption": "🚨Achtung🚨 Markiere deine Freunde! 🚬 #quarks #lernenmittiktok #rauchen #passivrauchen #snus", "categoryId": "facts", "paceOverride": null, "durationSec": 40, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 26700, "comments": 138, "shares": 7710, "plays": 562300}, "music": "Originalton – Quarks"}, {"id": "h-01", "embedId": "7555984128693357879", "tiktokUrl": "https://www.tiktok.com/@d1_clipper/video/7555984128693357879", "title": "Ranking: die lustigsten Hunde", "handle": "d1_clipper", "caption": "Dog #dogsoftiktok #dog #funny #ranking", "categoryId": "humor", "paceOverride": null, "durationSec": 60, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 2400000, "comments": 4737, "shares": 292800, "plays": 19000000}, "music": "Originalton – D1_Clipper"}, {"id": "h-02", "embedId": "7668685627914751262", "tiktokUrl": "https://www.tiktok.com/@adamscore3/video/7668685627914751262", "title": "Dogs in clothes looking funny", "handle": "adamscore3", "caption": "Dogs in clothes looking funny 🤣 #funnydogs #dogsoftiktok #dogsreactions", "categoryId": "humor", "paceOverride": null, "durationSec": 48, "width": 720, "height": 1280, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 3100000, "comments": 12300, "shares": 1200000, "plays": 27400000}, "music": "Originalton – Adam's core"}, {"id": "h-03", "embedId": "7678354914598341918", "tiktokUrl": "https://www.tiktok.com/@c0625960so9/video/7678354914598341918", "title": "Dramatic Puppies: Watergun Prank", "handle": "c0625960so9", "caption": "Dramatic Puppies Watergun Prank 😂 #puppies #watergun #puppiesoftiktok #funnyvideo", "categoryId": "humor", "paceOverride": null, "durationSec": 15, "width": 720, "height": 1280, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 774400, "comments": 12400, "shares": 286500, "plays": 18200000}, "music": "Originalton – Cuties Zone"}, {"id": "h-04", "embedId": "7603071058396155157", "tiktokUrl": "https://www.tiktok.com/@scoutheckman/video/7603071058396155157", "title": "Scout: The donut prison", "handle": "scoutheckman", "caption": "The donut prison. Beware! #dog #dogsoftiktok #funnydog #doglove", "categoryId": "humor", "paceOverride": null, "durationSec": 11, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 5700000, "comments": 6101, "shares": 1200000, "plays": 25600000}, "music": "Originalton – scoutheckman"}, {"id": "h-05", "embedId": "7606523760253947166", "tiktokUrl": "https://www.tiktok.com/@iamrigbycat/video/7606523760253947166", "title": "Rigby the cat: funk nonstop in her head", "handle": "iamrigbycat", "caption": "funk nonstop in her head #fyp #rigbycat #catsoftiktok #catcontent #sillycat", "categoryId": "humor", "paceOverride": null, "durationSec": 18, "width": 720, "height": 1280, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 21600000, "comments": 91500, "shares": 7100000, "plays": 144000000}, "music": "DREAM FUNK (Slowed)"}, {"id": "h-06", "embedId": "7681695185318792462", "tiktokUrl": "https://www.tiktok.com/@furryhousefinds/video/7681695185318792462", "title": "Chihuahua vs. Bully: instant karma", "handle": "furryhousefinds", "caption": "He had a lot to say until... 😭 #chihuahua #americanbully #instantkarma #funnydogs", "categoryId": "humor", "paceOverride": null, "durationSec": 9, "width": 720, "height": 1282, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 3200000, "comments": 43500, "shares": 1800000, "plays": 65200000}, "music": "Originalton – FurryHouseFinds"}, {"id": "sp-01", "embedId": "7681205349147348226", "tiktokUrl": "https://www.tiktok.com/@redbull/video/7681205349147348226", "title": "Red Bull: Danny León – anything can be a skate spot", "handle": "redbull", "caption": "anything can be a skate spot 😮‍💨 🛹: @dannyleon 🤝: @redbullskateboarding #skateboard #challenge", "categoryId": "sport", "paceOverride": null, "durationSec": 43, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 519100, "comments": 1145, "shares": 8622, "plays": 9100000}, "music": "Originalton – Red Bull"}, {"id": "sp-02", "embedId": "7688718661749689622", "tiktokUrl": "https://www.tiktok.com/@redbull/video/7688718661749689622", "title": "Red Bull: Lethal Shooter macht es leicht aussehen", "handle": "redbull", "caption": "@lethalshooter makes it look easy 😏 #redbull #basketball #trickshot", "categoryId": "sport", "paceOverride": null, "durationSec": 57, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 797900, "comments": 1832, "shares": 13300, "plays": 12000000}, "music": "Originalton – Red Bull"}, {"id": "sp-03", "embedId": "7647895637308034337", "tiktokUrl": "https://www.tiktok.com/@celinedept/video/7647895637308034337", "title": "Celine Dept: There is only one Zlatan", "handle": "celinedept", "caption": "There is only one Zlatan 🤯", "categoryId": "sport", "paceOverride": null, "durationSec": 42, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 5000000, "comments": 13900, "shares": 72000, "plays": 73400000}, "music": "Originalton – Celine Dept"}, {"id": "sp-04", "embedId": "7682087802044992790", "tiktokUrl": "https://www.tiktok.com/@redbull/video/7682087802044992790", "title": "Red Bull: the slippiest competition", "handle": "redbull", "caption": "the slippiest competition you'll ever see 🫣 #redbull #yaglidirek #challenge", "categoryId": "sport", "paceOverride": null, "durationSec": 49, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 385100, "comments": 1130, "shares": 4894, "plays": 8800000}, "music": "Originalton – Red Bull"}, {"id": "sp-05", "embedId": "7654779526081252638", "tiktokUrl": "https://www.tiktok.com/@hunterstein_wk/video/7654779526081252638", "title": "Hunter Stein: Floor Planche", "handle": "hunterstein_wk", "caption": "Saved it at the end #calisthenics #calisthenicsmotivation #floorplanche #planche #handstandpushups", "categoryId": "sport", "paceOverride": null, "durationSec": 11, "width": 720, "height": 1280, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 1300000, "comments": 5503, "shares": 47200, "plays": 9100000}, "music": "Originalton – hunterstein_wk"}, {"id": "sp-06", "embedId": "7568095251064245522", "tiktokUrl": "https://www.tiktok.com/@xsthenics/video/7568095251064245522", "title": "Xsthenics: Maybe Newton was wrong", "handle": "xsthenics", "caption": "Maybe Newton was wrong 🤣 #gravity #viral #calisthenics #trend #walk", "categoryId": "sport", "paceOverride": null, "durationSec": 19, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 2500000, "comments": 8849, "shares": 151500, "plays": 23800000}, "music": "SARRA RA RA – 2KE"}, {"id": "m-01", "embedId": "7549983315076549911", "tiktokUrl": "https://www.tiktok.com/@whereskhaila/video/7549983315076549911", "title": "Khaila: Rather Be (Piano)", "handle": "whereskhaila", "caption": "#musica #musician #ratherbe #pianocover #pianomusic #pianotok", "categoryId": "musik", "paceOverride": null, "durationSec": 21, "width": 576, "height": 1024, "addedAt": 1790970913826, "demo": false, "kind": "embed", "stats": {"likes": 1200000, "comments": 2695, "shares": 33400, "plays": 8800000}, "music": "Originalton – Khaila"}, {"id": "m-02", "embedId": "7659462389649116436", "tiktokUrl": "https://www.tiktok.com/@emilvergo/video/7659462389649116436", "title": "Emil Vergo: Måneskin – Beggin' (Drums)", "handle": "emilvergo", "caption": "Maneskin - beggin #drummer #drumming #drums #drummers", "categoryId": "musik", "paceOverride": null, "durationSec": 14, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 745600, "comments": 3960, "shares": 30900, "plays": 12000000}, "music": "Originalton – Emil Vergo"}, {"id": "m-03", "embedId": "7664725859550399757", "tiktokUrl": "https://www.tiktok.com/@nellysmelodies/video/7664725859550399757", "title": "Nelly: Champagne Coast am öffentlichen Klavier", "handle": "nellysmelodies", "caption": "How does this make you feel? #pianotok #publicpiano #champagnecoast #nostalgia", "categoryId": "musik", "paceOverride": null, "durationSec": 29, "width": 720, "height": 1280, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 2100000, "comments": 26600, "shares": 77800, "plays": 10500000}, "music": "Originalton – nellysmelodies"}, {"id": "m-04", "embedId": "7608269319012633878", "tiktokUrl": "https://www.tiktok.com/@eymen.piano/video/7608269319012633878", "title": "eymen: Love Story – Taylor Swift (Piano)", "handle": "eymen.piano", "caption": "| Love Story | #piano #pianotok #lovestory #cover", "categoryId": "musik", "paceOverride": null, "durationSec": 43, "width": 576, "height": 1024, "addedAt": 1790970913826, "demo": false, "kind": "embed", "stats": {"likes": 7100000, "comments": 44700, "shares": 318300, "plays": 54500000}, "music": "Originalton – eymen."}, {"id": "m-05", "embedId": "7586744930308017411", "tiktokUrl": "https://www.tiktok.com/@benjamin_bln_/video/7586744930308017411", "title": "Benjamin: Experience – Ludovico Einaudi (Piano)", "handle": "benjamin_bln_", "caption": "#piano #pianocover #ludovicoeinaudi", "categoryId": "musik", "paceOverride": null, "durationSec": 27, "width": 576, "height": 1024, "addedAt": 1790970913826, "demo": false, "kind": "embed", "stats": {"likes": 365400, "comments": 787, "shares": 11200, "plays": 4500000}, "music": "Experience (Piano Version) – benjamin_bln"}, {"id": "m-06", "embedId": "7556058109844901134", "tiktokUrl": "https://www.tiktok.com/@athenasings444/video/7556058109844901134", "title": "Athena: Where Have You Been (Orchestra-Cover)", "handle": "athenasings444", "caption": "Where Have You Been (orchestra version) cover - Rihanna #upcomingartist #singing #cover #rihanna", "categoryId": "musik", "paceOverride": null, "durationSec": 29, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 15800000, "comments": 132100, "shares": 429700, "plays": 119100000}, "music": "Where Have You Been Orchestral Cover – athena☆彡"}, {"id": "k-01", "embedId": "7623096620489461014", "tiktokUrl": "https://www.tiktok.com/@vito_nebula/video/7623096620489461014", "title": "Vito Nebula: «There is someone in the garden»", "handle": "vito_nebula", "caption": "\"There is someone in the garden\" 35x27 👁️🐍🌳 #surrealism #art #acrylic #painting #dreamcore", "categoryId": "kunst", "paceOverride": null, "durationSec": 16, "width": 576, "height": 1024, "addedAt": 1790959647421, "demo": false, "kind": "embed", "stats": {"likes": 630000, "comments": 3268, "shares": 36700, "plays": 4600000}, "music": "School Rooftop"}, {"id": "k-02", "embedId": "7638763358665051423", "tiktokUrl": "https://www.tiktok.com/@devonrodriguezart/video/7638763358665051423", "title": "Devon Rodriguez: Gorilla im Bronx Zoo", "handle": "devonrodriguezart", "caption": "Today I was at the Bronx Zoo with my Abuela and I ended up drawing this gorilla. I hope she enjoyed the drawing 🦍♥️", "categoryId": "kunst", "paceOverride": null, "durationSec": 38, "width": 720, "height": 1282, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 534300, "comments": 1108, "shares": 9865, "plays": 6800000}, "music": "Originalton – Devon Rodriguez"}, {"id": "k-03", "embedId": "7666413405854534914", "tiktokUrl": "https://www.tiktok.com/@safaljabouri/video/7666413405854534914", "title": "Safeyah: A painting within a painting", "handle": "safaljabouri", "caption": "A painting within a painting?! 😍😍", "categoryId": "kunst", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 2400000, "comments": 3987, "shares": 163900, "plays": 9600000}, "music": "do i clench my fists? – ridgeclub"}, {"id": "k-04", "embedId": "7552894611971198230", "tiktokUrl": "https://www.tiktok.com/@uhlenbrockkunstlehrer/video/7552894611971198230", "title": "Kunstlehrer Uhlenbrock: Der alltägliche Unterricht", "handle": "uhlenbrockkunstlehrer", "caption": "Der alltägliche Unterricht auf dem Bkvb #bkvb #lehrermomente #kunst", "categoryId": "kunst", "paceOverride": null, "durationSec": 15, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 481000, "comments": 771, "shares": 18100, "plays": 4300000}, "music": "Originalton – kiri"}, {"id": "k-05", "embedId": "7680645616505998625", "tiktokUrl": "https://www.tiktok.com/@chantallangenbach_/video/7680645616505998625", "title": "Chantal Langenbach: Acrylbild", "handle": "chantallangenbach_", "caption": "I'd appreciate it🤞🏽 #art #acrylicpainting #originalart #artistoftiktok", "categoryId": "kunst", "paceOverride": null, "durationSec": 10, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 2100000, "comments": 15400, "shares": 408900, "plays": 9000000}, "music": "Originalton – Salma"}, {"id": "k-06", "embedId": "7668071893542472967", "tiktokUrl": "https://www.tiktok.com/@jesswalkerdesign/video/7668071893542472967", "title": "Jess Walker: Midnight Glow", "handle": "jesswalkerdesign", "caption": "Revealing my newest painting 💙 Midnight Glow ✨ inspired by the beauty in the little things. #flowerpainting #paintingreveal #emergingartist", "categoryId": "kunst", "paceOverride": null, "durationSec": 8, "width": 576, "height": 1024, "addedAt": 1790897509586, "demo": false, "kind": "embed", "stats": {"likes": 2200000, "comments": 35000, "shares": 381000, "plays": 29100000}, "music": "hate that i made you love me – Ariana Grande"}, {"id": "r-01", "embedId": "7585273045552565536", "tiktokUrl": "https://www.tiktok.com/@best_spots_in/video/7585273045552565536", "title": "Best Spots: «manifesting»", "handle": "best_spots_in", "caption": "manifesting. #travel #explore #2026", "categoryId": "reisen", "paceOverride": null, "durationSec": 9, "width": 576, "height": 1024, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 8200000, "comments": 23800, "shares": 1000000, "plays": 42900000}, "music": "LoveHate Thing (Sped Up) – Wale"}, {"id": "r-02", "embedId": "7557714446257523991", "tiktokUrl": "https://www.tiktok.com/@tompowelll/video/7557714446257523991", "title": "Tom Powell: A wimmaweh across Switzerland", "handle": "tompowelll", "caption": "A wimmaweh across Switzerland 🇨🇭 #swiss #alps #travel #hiking", "categoryId": "reisen", "paceOverride": null, "durationSec": 19, "width": 576, "height": 1024, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 1100000, "comments": 4382, "shares": 75300, "plays": 11900000}, "music": "Originalton – Seany"}, {"id": "r-03", "embedId": "7583349186108656898", "tiktokUrl": "https://www.tiktok.com/@swiss_beautiful/video/7583349186108656898", "title": "Marco Marques: Beautiful Switzerland", "handle": "swiss_beautiful", "caption": "BEAUTIFUL SWITZERLAND 🇨🇭 #switzerland #swissbeautiful #travel #tiktoktravel", "categoryId": "reisen", "paceOverride": null, "durationSec": 11, "width": 576, "height": 1024, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 2200000, "comments": 6355, "shares": 260800, "plays": 17100000}, "music": "Originalton"}, {"id": "r-04", "embedId": "7662134858403040542", "tiktokUrl": "https://www.tiktok.com/@cokaquest/video/7662134858403040542", "title": "cokaquest: Kelingking Beach, Nusa Penida", "handle": "cokaquest", "caption": "The most beautiful beach I've ever seen. Kelingking Beach in Nusa Penida #kelingkingbeach #beach #sunset #travel", "categoryId": "reisen", "paceOverride": null, "durationSec": 17, "width": 720, "height": 1280, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 2300000, "comments": 14800, "shares": 286200, "plays": 12600000}, "music": "Originalton – alex"}, {"id": "r-05", "embedId": "7613871715139079446", "tiktokUrl": "https://www.tiktok.com/@claire.e3/video/7613871715139079446", "title": "Chiara: Would you drive this road?", "handle": "claire.e3", "caption": "Would you drive this road? 🌊 #traveldiaries #roadtrip #travel #oceanview", "categoryId": "reisen", "paceOverride": null, "durationSec": 13, "width": 576, "height": 1024, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 6000000, "comments": 6931, "shares": 356000, "plays": 32500000}, "music": "Originalton – RiyadhEyes"}, {"id": "r-06", "embedId": "7658445776103804173", "tiktokUrl": "https://www.tiktok.com/@mountainbrynn/video/7658445776103804173", "title": "Brynn: Stoos Ridge, Switzerland", "handle": "mountainbrynn", "caption": "📍Stoos Ridge, Switzerland 🏔️ Easily the most beautiful view I've seen #travel #switzerland #views", "categoryId": "reisen", "paceOverride": null, "durationSec": 19, "width": 720, "height": 1280, "addedAt": 1790940366870, "demo": false, "kind": "embed", "stats": {"likes": 1500000, "comments": 11600, "shares": 175500, "plays": 9900000}, "music": "Originalton – pr.khriz"}]};</script>
 <script>
 'use strict';
 /* =====================================================================
@@ -776,6 +807,7 @@ const store = {
       if (ov.pace) Object.assign(c.pace, ov.pace);
       if (Array.isArray(ov.categories)) c.categories = ov.categories;
       c.paceOverrides = ov.pace_overrides || o.config.pace_overrides || {};
+      c.cutsPerMin = ov.cuts_per_min || o.config.cuts_per_min || {}; // hand-counted cuts per minute per video
       return c;
     }
     if (CAP.db) { const s = await CAP.db.doc('config/main').get(); return s.exists ? migrateConfig(s.data()) : null; }
@@ -783,7 +815,18 @@ const store = {
   },
   async saveConfig(c) { if (this.mode === 'remote') return; if (CAP.db) await CAP.db.doc('config/main').set(c); else LS.set('fl.config', c); },
   async loadVideos() {
-    if (this.mode === 'remote') { const po = (S.config && S.config.paceOverrides) || {}; return (window.FL_ONLINE.videos || []).map(v => Object.assign({}, v, po[v.id] ? { paceOverride: po[v.id] } : {})); }
+    if (this.mode === 'remote') {
+      const po = (S.config && S.config.paceOverrides) || {}, cm = (S.config && S.config.cutsPerMin) || {}, local = LS.get('fl.cuts', {}), durs = LS.get('fl.dur', {});
+      return (window.FL_ONLINE.videos || []).map(v => {
+        const o = Object.assign({}, v);
+        if (durs[v.id] > 1) o.durationSec = durs[v.id]; // real length as reported by the player on this device
+        if (po[v.id]) o.paceOverride = po[v.id];
+        // cuts: counted on this device (setup tab) > config.json > none. Embedded TikToks cannot be measured automatically.
+        if (local[v.id] != null && o.durationSec) { o.cutsCount = +local[v.id]; o.cutsPerMin = +(o.cutsCount / (o.durationSec / 60)).toFixed(1); o.cutsManual = true; }
+        else if (cm[v.id] != null && isFinite(+cm[v.id])) { o.cutsPerMin = +cm[v.id]; o.cutsManual = true; }
+        return o;
+      });
+    }
     if (CAP.db) { const q = await CAP.db.collection('videos').limit(1000).get(); return q.docs.map(d => d.data()); }
     return Object.values(LS.get('fl.videos', {}));
   },
@@ -828,7 +871,7 @@ function videoSources(v) {
   return v.sources || [];
 }
 function paceClass(v, cfg = S.config) {
-  if (v.paceOverride) return v.paceOverride;
+  if (v.paceOverride && !v.cutsManual) return v.paceOverride; // hand-counted cuts beat a guessed override
   const c = v.cutsPerMin;
   if (!isFinite(c)) return 'unbekannt';
   if (c >= cfg.pace.fastMin) return 'schnell';
@@ -838,7 +881,7 @@ function paceClass(v, cfg = S.config) {
 const PACE_LABEL = { schnell: 'schnell', mittel: 'mittel', langsam: 'langsam', unbekannt: 'nicht bestimmt' };
 const catById = id => (S.config?.categories || []).find(c => c.id === id) || null;
 const catName = id => catById(id)?.name || 'ohne Kategorie';
-const catColor = id => { const c = catById(id); return c ? `var(--s${(c.slot % 8) + 1})` : 'var(--ink-3)'; };
+const catColor = id => { const c = catById(id); return c ? `var(--s${(c.slot % 10) + 1})` : 'var(--ink-3)'; };
 function sortVideos() { S.videos.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0)); }
 
 function show(name) {
@@ -1046,11 +1089,12 @@ const feed = {
 
   addEndSlide() {
     const i = this.slides.length;
+    const online = isOnline();
     const slide = el('div', { class: 'slide endslide', 'data-i': i },
       el('div', { class: 'box' },
         el('h2', { text: 'Das war’s.' }),
-        el('p', { text: 'Du hast alle Videos gesehen. Tipp auf „Fertig“, um abzuschliessen.' }),
-        el('button', { class: 'btn-big', onclick: () => this.done() }, 'Fertig')));
+        el('p', { text: online ? 'Du hast alle Videos gesehen – danke fürs Mitmachen!' : 'Du hast alle Videos gesehen. Tipp auf „Fertig“, um abzuschliessen.' }),
+        online ? null : el('button', { class: 'btn-big', onclick: () => this.done() }, 'Fertig')));
     this.slides.push({ videoId: null, round: 0, el: slide, p: null, end: true });
     $('#feed').append(slide);
     this.observer.observe(slide);
@@ -1062,6 +1106,8 @@ const feed = {
     if (prev) { this.closeView(); if (prev.p) { prev.p.pause(); prev.el.classList.remove('paused'); } }
     this.active = i;
     const s = this.slides[i];
+    // online: the feed ends by itself – reaching the last slide finishes the session after a short pause
+    if (s && s.end && isOnline()) { clearTimeout(this.endT); this.endT = setTimeout(() => { if (this.active === i && S.session && S.session.status === 'running') this.done(); }, 1600); }
     if (!s || s.end) return;
     const v = S.videos.find(x => x.id === s.videoId) || {};
     this.view = {
@@ -1129,6 +1175,8 @@ const feed = {
     vw.watchMs = Math.round(vw.watchMs);
     const d = p.duration || vw.durationSec || 0;
     vw.durationSec = +d.toFixed(2);
+    // remember the real length the player reported (needed for cuts/min in the setup tab)
+    if (p.duration > 1) { const v = S.videos.find(x => x.id === vw.videoId); if (v && Math.abs((v.durationSec || 0) - p.duration) > 0.5) { v.durationSec = +p.duration.toFixed(1); const m = LS.get('fl.dur', {}); m[v.id] = v.durationSec; LS.set('fl.dur', m); } }
     vw.completed = vw.loops > 0 || (d > 0 && vw.maxPos >= d - 0.35);
     vw.liked = !!s.liked;
     if (p.kind === 'embed' && !p.ready) vw.failed = true;
@@ -1158,7 +1206,7 @@ const feed = {
   saveNow() { clearTimeout(this.saveT); if (S.session) { S.session.lastSeenAt = Date.now(); store.saveSession(S.session).catch(() => {}); } },
 
   stop() {
-    cancelAnimationFrame(this.raf);
+    cancelAnimationFrame(this.raf); clearTimeout(this.endT);
     if (this.observer) this.observer.disconnect();
     for (const s of this.slides) if (s.p) { s.p.pause(); }
   },
@@ -1180,18 +1228,18 @@ const feed = {
   thanks() {
     const ss = S.session;
     $('#end-estimate').hidden = true; $('#end-thanks').hidden = false;
-    const first = ss.views.filter(v => !v.revisit && v.round === 1);
-    const stats = [
-      ['Videos', String(ss.views.length)],
-      ['gescrollt', fmt.min(ss.durationMs)],
-    ];
-    if (ss.estimateMin != null) stats.push(['geschätzt', de(ss.estimateMin) + ' min']);
-    if (first.length) { const longest = first.slice().sort((a, b) => b.watchMs - a.watchMs)[0]; stats.push(['längstes Video', fmt.sec(longest.watchMs / 1000)]); }
-    $('#end-stats').replaceChildren(...stats.map(([l, v]) => el('div', {}, el('div', { class: 'v', text: v }), el('div', { class: 'l', text: l }))));
     const online = isOnline();
+    // online (participants): one plain end screen – thanks, anonymous number, one button. No numbers that could invite comparison.
+    const first = ss.views.filter(v => !v.revisit && v.round === 1);
+    const stats = online ? [] : [['Videos', String(ss.views.length)], ['gescrollt', fmt.min(ss.durationMs)]];
+    if (!online && ss.estimateMin != null) stats.push(['geschätzt', de(ss.estimateMin) + ' min']);
+    if (!online && first.length) { const longest = first.slice().sort((a, b) => b.watchMs - a.watchMs)[0]; stats.push(['längstes Video', fmt.sec(longest.watchMs / 1000)]); }
+    $('#end-stats').replaceChildren(...stats.map(([l, v]) => el('div', {}, el('div', { class: 'v', text: v }), el('div', { class: 'l', text: l }))));
+    $('#end-stats').hidden = !stats.length;
+    $('#end-title').textContent = online ? 'Ende' : 'Danke!';
     $('#end-code').hidden = !online; if (online) $('#end-code-value').textContent = ss.code || '–';
-    $('#end-lead').textContent = online ? 'Deine Daten sind anonym gespeichert. Du kannst die Seite jetzt schliessen.' : 'Deine Daten sind anonym gespeichert.';
-    $('#btn-next').hidden = online; $('#btn-again').hidden = !online;
+    $('#end-lead').textContent = online ? 'Danke fürs Mitmachen. Deine Daten sind anonym gespeichert.' : 'Deine Daten sind anonym gespeichert.';
+    $('#btn-next').hidden = online; $('#btn-close').hidden = !online; $('#end-closed').hidden = true; $('#btn-again').hidden = true;
     if (online && !ss.test) { S.code = participantCode(); S.repeat = true; }
   },
 
@@ -1213,13 +1261,17 @@ function updateStartBanner() {
   else if (S.config.settings.testMode || isTestLink()) parts.push('<b>Testmodus</b> – diese Session wird in der Statistik ausgeblendet.');
   if (store.mode === 'local') parts.push('Lokaler Modus: Daten bleiben nur auf diesem Gerät.');
   if (online && !remote.enabled) parts.push('<b>Noch kein Speicherort eingerichtet</b> – Ergebnisse bleiben nur auf diesem Gerät.');
+  // opened as a local file (double-click on index.html): browsers block autoplay and TikTok's player in file:// pages
+  if (location.protocol === 'file:') parts.push('<b>Lokal geöffnet.</b> Als Datei spielt der Browser die TikTok-Videos nicht ab – diese Datei ist nur zum Hochladen. Zum Testen den Online-Link öffnen.');
   b.innerHTML = parts.join(' · ');
   b.hidden = !parts.length;
   $('#btn-start').disabled = !n;
   // online: anonymous participant number, consent line, one-per-device notice
   $('#start-online').hidden = !online;
   $('#start-note-kiosk').hidden = online;
+  $('#start-eyebrow').hidden = !online;
   if (online) {
+    $('#start-lead').innerHTML = 'Scroll durch den Feed wie bei TikTok.<br>Wenn er zu Ende ist, bist du fertig.';
     const done = LS.get('fl.participated', null);
     if (done && !S.repeat && !isTestLink()) {
       S.repeat = true;
@@ -1254,7 +1306,14 @@ async function askKey() {
       const key = inp.value.trim(); if (!key) return;
       btn.disabled = true; err.hidden = true;
       try { S.readKey = key; await remote.get({ action: 'list', key, limit: 1 }); try { sessionStorage.setItem('fl.key', key); } catch (e) {} closeModal(); res(true); }
-      catch (e) { S.readKey = ''; err.textContent = /key|schl/i.test(String(e.message)) ? 'Falscher Schlüssel.' : 'Verbindung fehlgeschlagen: ' + (e.message || e); err.hidden = false; btn.disabled = false; }
+      catch (e) {
+        S.readKey = '';
+        const m = String(e.message || e);
+        err.textContent = /key|schl/i.test(m) ? 'Falscher Schlüssel.'
+          : /failed to fetch|networkerror|load failed/i.test(m) ? 'Dieser Browser blockiert die Verbindung zu Google (Adblocker, Tracking-Schutz oder eingebettetes Browser-Fenster). Bitte die Seite in Chrome, Safari oder Edge öffnen.'
+          : 'Verbindung fehlgeschlagen: ' + m;
+        err.hidden = false; btn.disabled = false;
+      }
     };
     btn.addEventListener('click', check);
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
@@ -1297,6 +1356,11 @@ function bindKiosk() {
   $('#btn-estimate-skip').addEventListener('click', () => { if (S.session) { S.session.estimateMin = null; store.saveSession(S.session).catch(() => {}); } feed.thanks(); });
   $('#btn-next').addEventListener('click', () => feed.reset());
   $('#btn-again').addEventListener('click', () => { feed.reset(); updateStartBanner(); });
+  // online end button: the session is already saved – try to close the tab, otherwise say so and offer a restart link (for testing)
+  $('#btn-close').addEventListener('click', () => {
+    try { window.close(); } catch (e) {}
+    setTimeout(() => { if (!window.closed) { $('#btn-close').hidden = true; $('#end-closed').hidden = false; $('#btn-again').hidden = false; } }, 150);
+  });
   $('#btn-participated-again').addEventListener('click', () => { $('#start-participated').hidden = true; });
   $('#feed').addEventListener('touchend', () => feed.prime(), { passive: true });
   $('#feed').addEventListener('pointerup', () => feed.prime());
@@ -1503,6 +1567,7 @@ const admin = {
     $('#btn-del-test').addEventListener('click', () => this.deleteSessions('test'));
     $('#btn-del-all').addEventListener('click', () => this.deleteSessions('all'));
     $('#btn-refresh').addEventListener('click', () => stats.load(true));
+    $('#btn-reset').addEventListener('click', () => this.resetAll());
     for (const id of ['f-first', 'f-notest', 'f-nodemo']) $('#' + id).addEventListener('change', () => stats.render());
     $('#btn-setup-ping').addEventListener('click', () => this.setupPing());
     $('#btn-setup-testlink').addEventListener('click', async () => {
@@ -1533,11 +1598,61 @@ const admin = {
   // ----- setup (online version) -----
   renderSetup() {
     this.setupPing();
+    this.renderCuts();
     const list = $('#setup-videos'); list.replaceChildren();
     if (!S.videos.length) list.append(el('p', { class: 'muted small', text: 'Keine Videos eingebaut.' }));
     for (const v of S.videos) { const c = this.videoCard(v).cloneNode(true); c.classList.add('static'); c.removeAttribute('role'); c.removeAttribute('tabindex'); list.append(c); }
     const cats = S.config.categories.map(c => `<span class="chip" style="color:${catColor(c.id)}"><i class="dot"></i><span style="color:var(--ink-2)">${esc(c.name)} · ${S.videos.filter(v => v.categoryId === c.id).length}</span></span>`).join(' ');
     $('#setup-config').innerHTML = `${cats}<br><br>Tempo: ab <b>${S.config.pace.fastMin}</b> Schnitten/min „schnell“, bis <b>${S.config.pace.slowMax}</b> „langsam“. Zeitschätzung am Ende: <b>${S.config.settings.askEstimate ? 'ja' : 'nein'}</b>. Feed läuft weiter: <b>${S.config.settings.endless ? 'ja, max. ' + S.config.settings.maxRounds + ' Runden' : 'nein'}</b>.`;
+  },
+  // hand-counted cuts per video (online version): stored on this device, exportable for config.json
+  renderCuts() {
+    $('#cuts-fast').textContent = S.config.pace.fastMin; $('#cuts-slow').textContent = S.config.pace.slowMax;
+    const local = LS.get('fl.cuts', {});
+    const cats = S.config.categories.slice().sort((a, b) => a.slot - b.slot);
+    const vids = S.videos.slice().sort((a, b) => cats.findIndex(c => c.id === a.categoryId) - cats.findIndex(c => c.id === b.categoryId) || a.id.localeCompare(b.id));
+    const t = $('#cuts-table'); t.replaceChildren();
+    t.append(el('thead', {}, el('tr', {}, ...['Video', 'Länge', 'Schnitte gezählt', 'Schnitte/min', 'Tempo'].map((h, i) => el('th', { class: i >= 1 ? 'num' : '', text: h })))));
+    const tb = el('tbody'); t.append(tb);
+    for (const v of vids) {
+      const inp = el('input', { type: 'number', min: 0, max: 999, step: 1, inputmode: 'numeric', style: 'width:76px;padding:5px 8px;text-align:right', placeholder: '–' });
+      if (local[v.id] != null) inp.value = local[v.id];
+      const perMin = el('td', { class: 'num' }), pace = el('td', {});
+      const upd = () => {
+        const p = paceClass(v);
+        perMin.textContent = isFinite(v.cutsPerMin) ? fmt.n1(v.cutsPerMin) + (v.cutsCount == null && v.cutsManual ? ' (config)' : '') : '–';
+        pace.replaceChildren(el('span', { class: 'chip pace-' + p, text: PACE_LABEL[p] }));
+      };
+      inp.addEventListener('change', () => {
+        const n = inp.value === '' ? null : Math.max(0, Math.round(+inp.value));
+        const m = LS.get('fl.cuts', {}); if (n == null) delete m[v.id]; else m[v.id] = n; LS.set('fl.cuts', m);
+        const cfgVal = (S.config.cutsPerMin || {})[v.id];
+        if (n != null && v.durationSec) { v.cutsCount = n; v.cutsPerMin = +(n / (v.durationSec / 60)).toFixed(1); v.cutsManual = true; }
+        else if (cfgVal != null) { delete v.cutsCount; v.cutsPerMin = +cfgVal; v.cutsManual = true; }
+        else { delete v.cutsCount; delete v.cutsPerMin; delete v.cutsManual; }
+        upd(); this.renderCutsJson(false); // the statistics tab re-renders with the new numbers when opened
+      });
+      upd();
+      tb.append(el('tr', {},
+        el('td', {}, el('b', { text: v.title }), el('div', { class: 'muted small' }, '@' + (v.handle || ''), ' · ', v.tiktokUrl ? el('a', { href: v.tiktokUrl, target: '_blank', rel: 'noopener', text: 'auf TikTok ansehen' }) : null)),
+        el('td', { class: 'num', text: fmt.sec(v.durationSec) }), el('td', { class: 'num' }, inp), perMin, pace));
+    }
+    if (!this.cutsBound) {
+      this.cutsBound = true;
+      $('#btn-cuts-copy').addEventListener('click', () => this.renderCutsJson(true));
+      $('#btn-cuts-clear').addEventListener('click', async () => {
+        if (!await confirmModal({ title: 'Gezählte Schnitte löschen?', text: 'Nur die Eingaben auf diesem Gerät werden entfernt; Werte aus config.json bleiben.', ok: 'Löschen' })) return;
+        try { localStorage.removeItem('fl.cuts'); } catch (e) {}
+        S.videos = await store.loadVideos(); sortVideos(); this.renderCuts(); $('#cuts-json').hidden = true; toast('Eingaben gelöscht.');
+      });
+    }
+  },
+  async renderCutsJson(copy) {
+    const m = {};
+    for (const v of S.videos) if (isFinite(v.cutsPerMin)) m[v.id] = +(+v.cutsPerMin).toFixed(1);
+    const txt = '"cuts_per_min": ' + JSON.stringify(m, null, 2);
+    const pre = $('#cuts-json'); pre.textContent = txt; pre.hidden = !Object.keys(m).length;
+    if (copy) { try { await navigator.clipboard.writeText(txt); toast('Kopiert – in config.json einfügen (ersetzt den Block "cuts_per_min").'); } catch (e) { toast('Kopieren nicht möglich – Text unten markieren und kopieren.'); } }
   },
   async setupPing() {
     const st = $('#setup-status');
@@ -1773,6 +1888,24 @@ const admin = {
       stats.sessions = null; updateStartBanner(); this.renderSettings(); toast('Beispieldaten entfernt.');
     } catch (e) { toast('Entfernen fehlgeschlagen.'); }
   },
+  // reset button in the statistics: wipe every measurement (also in the Google sheet) and let this device take part again
+  async resetAll() {
+    const ok = await confirmModal({ title: 'Alles zurücksetzen?', text: 'Sämtliche Messungen aller Teilnehmenden werden gelöscht' + (store.mode === 'remote' ? ' – auch in der Google-Tabelle' : '') + '. Die Statistik beginnt danach bei null. Wenn du die Daten noch brauchst: vorher CSV exportieren.', ok: 'Alles löschen' });
+    if (!ok) return;
+    const btn = $('#btn-reset'); btn.disabled = true; btn.textContent = 'Lösche …';
+    try {
+      const ss = await store.loadSessions();
+      let n = 0;
+      for (let i = 0; i < ss.length; i += 3) { // a few at a time – the Google script queues them anyway
+        await Promise.all(ss.slice(i, i + 3).map(s => store.deleteSession(s.id).then(() => { n++; btn.textContent = `Lösche … ${n}/${ss.length}`; })));
+      }
+      try { localStorage.removeItem('fl.sessions'); localStorage.removeItem('fl.participated'); } catch (e) {}
+      S.repeat = false; $('#start-participated').hidden = true;
+      stats.sessions = null; await stats.load(true); updateStartBanner();
+      toast(n ? n + ' Session(s) gelöscht – alles auf null.' : 'Es war nichts zu löschen.');
+    } catch (e) { toast('Zurücksetzen fehlgeschlagen.'); }
+    btn.disabled = false; btn.textContent = 'Zurücksetzen';
+  },
   async deleteSessions(which) {
     const ok = await confirmModal({ title: which === 'all' ? 'Wirklich alle Sessions löschen?' : 'Test-Sessions löschen?', text: which === 'all' ? 'Sämtliche Messungen aller Teilnehmenden werden unwiderruflich gelöscht. Vorher exportieren!' : 'Alle als Test markierten Sessions werden gelöscht.' });
     if (!ok) return;
@@ -1790,9 +1923,19 @@ const admin = {
    ===================================================================== */
 const PACE_ORDER = ['schnell', 'mittel', 'langsam'];
 const PACE_COLOR = { schnell: 'var(--p3)', mittel: 'var(--p2)', langsam: 'var(--p1)' };
+const SKIP_S = 3; // «sofort weitergewischt»: weniger als 3 s geschaut
+// Kennzahlen, die sich in allen Diagrammen umschalten lassen (eine Achse, eine Einheit pro Diagramm)
+const METRICS = {
+  ratio: { name: 'Schauzeit in % der Länge', unit: '%', get: a => a.ratio * 100, desc: 'Schauzeit geteilt durch Videolänge. 100 % = einmal ganz gesehen, über 100 % = mehrfach geschaut. Hoch = das Video hält.' },
+  watchS: { name: 'Schauzeit in Sekunden', unit: 's', get: a => a.watchS, desc: 'Wie lange das Video im Schnitt lief, bevor weitergewischt wurde.' },
+  completed: { name: 'bis zum Ende geschaut', unit: '%', get: a => a.completed * 100, desc: 'Anteil der Ansichten, bei denen das Video bis zum Schluss lief.' },
+  skip: { name: 'sofort weitergewischt', unit: '%', get: a => a.skip * 100, desc: 'Anteil der Ansichten, die nach weniger als ' + SKIP_S + ' Sekunden weitergewischt wurden. Hoch = wenig Sog.' },
+  liked: { name: 'geliked', unit: '%', get: a => a.liked * 100, desc: 'Anteil der Ansichten mit Like (Herz oder Doppeltipp).' },
+};
+const SHAPES = ['circle', 'square', 'triangle', 'diamond', 'pentagon', 'hexagon']; // zweite Kodierung neben der Farbe (Kategorie)
 
 const stats = {
-  sessions: null, xAxis: 'cutsPerMin',
+  sessions: null, xAxis: 'cutsPerMin', metric: 'ratio',
 
   async load(force) {
     if (this.sessions && !force) { this.render(); return; }
@@ -1834,6 +1977,7 @@ const stats = {
     return {
       n: list.length, ratio: mean(r), watchS: mean(list.map(v => v.watchS)),
       completed: list.length ? list.filter(v => v.completed).length / list.length : NaN,
+      skip: list.length ? list.filter(v => v.watchS < SKIP_S).length / list.length : NaN,
       loops: mean(list.map(v => v.loops || 0)), liked: list.length ? list.filter(v => v.liked).length / list.length : NaN,
       exit: mean(list.map(v => v.exitRatio).filter(isFinite)), dwellS: mean(list.map(v => (v.dwellMs || 0) / 1000)),
     };
@@ -1851,79 +1995,152 @@ const stats = {
     const { sessions, views } = this.prepare();
     if (!sessions.length) {
       body.append(el('div', { class: 'empty card' }, el('b', { text: 'Noch keine Messungen' }),
-        el('span', { text: 'Sobald jemand den Feed durchscrollt und auf „Fertig“ tippt, erscheinen hier die Auswertungen. Zum Ausprobieren den Testmodus einschalten.' })));
+        el('span', { text: 'Sobald jemand den Feed durchscrollt, erscheinen hier die Auswertungen. Zum Ausprobieren den Testmodus einschalten.' })));
       return;
     }
+    const M = METRICS[this.metric] || METRICS.ratio, mv = a => M.get(a), unit = M.unit;
     const A = this.agg(views);
     const est = sessions.filter(s => s.estimateMin != null && s.durationMs > 0).map(s => ({ actual: s.durationMs / 60000, est: s.estimateMin, s }));
     const estDiff = mean(est.map(e => e.est - e.actual));
+    const abandoned = sessions.filter(s => s.endedBy === 'abandoned').length;
     const kpis = [
-      [String(sessions.length), 'Teilnehmende', sessions.filter(s => s.endedBy === 'abandoned').length ? sessions.filter(s => s.endedBy === 'abandoned').length + ' ohne „Fertig“' : 'alle abgeschlossen'],
-      [fmt.min(mean(sessions.map(s => s.durationMs))), 'Ø Zeit pro Person', 'gesamt ' + fmt.min(sessions.reduce((a, s) => a + (s.durationMs || 0), 0))],
+      [String(sessions.length), 'Teilnehmende', abandoned ? abandoned + ' ohne Ende' : 'alle bis zum Ende'],
+      [fmt.min(mean(sessions.map(s => s.durationMs))), 'Ø Scrollzeit pro Person', 'gesamt ' + fmt.min(sessions.reduce((a, s) => a + (s.durationMs || 0), 0))],
       [fmt.n1(mean(sessions.map(s => s.views.length))), 'Ø Videos pro Person', 'davon ' + fmt.n1(mean(sessions.map(s => s.firstViews))) + ' erstmalig'],
       [fmt.pct(A.ratio), 'Ø Schauzeit / Länge', 'Ø ' + fmt.sec(A.watchS) + ' pro Video'],
       [fmt.pct(A.completed), 'bis zum Ende geschaut', 'Ø ' + fmt.n1(A.loops) + ' Wiederholungen'],
+      [fmt.pct(A.skip), 'sofort weitergewischt', 'unter ' + SKIP_S + ' s geschaut'],
       est.length ? [(estDiff >= 0 ? '+' : '−') + fmt.n1(Math.abs(estDiff)) + ' min', 'Zeitgefühl', 'geschätzt minus echt, n = ' + est.length] : null,
     ].filter(Boolean);
     body.append(el('div', { class: 'kpis' }, ...kpis.map(([v, l, s]) => el('div', { class: 'card kpi' }, el('div', { class: 'v', text: v }), el('div', { class: 'l', text: l }), el('div', { class: 's', text: s })))));
 
     // per category / pace / video
+    const catOrder = S.config.categories.map(c => c.id);
     const byCat = [...this.groupBy(views, v => v.categoryId)].map(([id, list]) => Object.assign({ id, name: catName(id), color: catColor(id) }, this.agg(list))).sort((a, b) => b.ratio - a.ratio);
     const byPace = PACE_ORDER.map(p => Object.assign({ id: p, name: PACE_LABEL[p], color: PACE_COLOR[p] }, this.agg(views.filter(v => v.pace === p)), { cuts: mean(views.filter(v => v.pace === p).map(v => v.cutsPerMin).filter(isFinite)) })).filter(x => x.n);
-    const byVideo = [...this.groupBy(views, v => v.videoId)].map(([id, list]) => Object.assign({ id, v: list[0].video, title: list[0].title, categoryId: list[0].categoryId, pace: list[0].pace, cutsPerMin: list[0].cutsPerMin, motion: list[0].motion, durationSec: list[0].durationSec }, this.agg(list))).sort((a, b) => b.ratio - a.ratio);
+    const byVideo = [...this.groupBy(views, v => v.videoId)].map(([id, list]) => Object.assign({ id, v: list[0].video, title: list[0].title, handle: list[0].video ? list[0].video.handle : '', categoryId: list[0].categoryId, pace: list[0].pace, cutsPerMin: list[0].cutsPerMin, motion: list[0].motion, durationSec: list[0].durationSec }, this.agg(list))).sort((a, b) => b.ratio - a.ratio);
     const vidsWithMetric = byVideo.filter(x => isFinite(x.cutsPerMin) && isFinite(x.ratio));
     const rCuts = this.pearson(vidsWithMetric.map(x => x.cutsPerMin), vidsWithMetric.map(x => x.ratio));
     const vidsMotion = byVideo.filter(x => isFinite(x.motion) && isFinite(x.ratio));
     const rMotion = this.pearson(vidsMotion.map(x => x.motion), vidsMotion.map(x => x.ratio));
 
-    // the answer
+    // which video metrics exist at all (embedded TikToks have no measured cuts/motion)
+    const hasCuts = byVideo.some(x => isFinite(x.cutsPerMin)), hasMotion = byVideo.some(x => isFinite(x.motion));
+
+    // category × tempo cells (the study design: every category contains fast, medium and slow videos)
+    const cats = catOrder.filter(id => byCat.some(c => c.id === id)).concat(byCat.map(c => c.id).filter(id => !catOrder.includes(id)));
+    const cell = (cid, p) => this.agg(views.filter(v => v.categoryId === cid && v.pace === p));
+    const grid = cats.map(cid => ({ id: cid, name: catName(cid), color: catColor(cid), cells: PACE_ORDER.map(p => Object.assign({ pace: p }, cell(cid, p))), all: byCat.find(c => c.id === cid) }));
+    const shapeOf = cid => SHAPES[Math.max(0, cats.indexOf(cid)) % SHAPES.length];
+
+    // the answer – always on the primary measure (Schauzeit in % der Länge)
     const topCat = byCat.find(c => c.id) || byCat[0];
     const topPace = byPace.slice().sort((a, b) => b.ratio - a.ratio)[0];
+    const topVideo = byVideo.find(x => isFinite(x.ratio));
     const rWord = r => !isFinite(r) ? 'zu wenige Videos' : Math.abs(r) < 0.2 ? 'kaum' : Math.abs(r) < 0.5 ? (r > 0 ? 'leicht positiv' : 'leicht negativ') : (r > 0 ? 'deutlich positiv' : 'deutlich negativ');
+    const parts = [];
+    if (byCat.length > 1) parts.push(`Reihenfolge der Kategorien: ${byCat.map(c => `<b>${esc(c.name)}</b> ${esc(fmt.pct(c.ratio))}`).join(' · ')}.`);
+    if (topPace && byPace.length > 1) parts.push(`Tempo über alle Kategorien: <b>${esc(topPace.name)}</b> liegt vorn (${byPace.map(p => esc(p.name) + ' ' + esc(fmt.pct(p.ratio))).join(' · ')}).`);
+    const winners = grid.map(g => { const c = g.cells.filter(x => x.n && isFinite(x.ratio)).sort((a, b) => b.ratio - a.ratio); return c.length >= 2 ? { g, best: c[0] } : null; }).filter(Boolean);
+    if (winners.length >= 2) {
+      const same = new Set(winners.map(w => w.best.pace)).size === 1;
+      parts.push(`Innerhalb der Kategorien: ${winners.map(w => `${esc(w.g.name)} → <b>${esc(PACE_LABEL[w.best.pace])}</b> (${esc(fmt.pct(w.best.ratio))})`).join(', ')}. ` + (same ? 'Das Tempo wirkt in allen Kategorien gleich.' : 'Das Tempo wirkt je nach Kategorie unterschiedlich – der Inhalt spielt mit.'));
+    }
+    if (topVideo) parts.push(`Stärkstes einzelnes Video: <b>${esc(topVideo.title)}</b> (${esc(catName(topVideo.categoryId))}, Ø ${esc(fmt.pct(topVideo.ratio))}, n = ${topVideo.n}).`);
+    if (byCat.length > 1) { const sk = byCat.slice().sort((a, b) => b.skip - a.skip)[0]; if (isFinite(sk.skip)) parts.push(`Am häufigsten sofort weitergewischt: <b>${esc(sk.name)}</b> (${esc(fmt.pct(sk.skip))} der Ansichten unter ${SKIP_S} s).`); }
+    if (vidsWithMetric.length >= 3) parts.push(`Zusammenhang Schnitte/min ↔ Schauanteil: <b>${rWord(rCuts)}</b> (r = ${esc(fmt.n1(rCuts))}, n = ${vidsWithMetric.length} Videos).`);
+    if (vidsMotion.length >= 3) parts.push(`Bewegung ↔ Schauanteil: <b>${rWord(rMotion)}</b> (r = ${esc(fmt.n1(rMotion))}).`);
+    parts.push(`Basis: ${views.length} Ansicht${views.length === 1 ? '' : 'en'} von ${sessions.length} Person${sessions.length === 1 ? '' : 'en'}${sessions.length < 5 ? ' – mit mehr Teilnehmenden wird die Aussage verlässlicher' : ''}.`);
     body.append(el('div', { class: 'card answer' },
       el('div', { class: 'eyebrow', text: 'Was hält am längsten?' }),
       el('h3', { html: topCat ? `Kategorie <span style="color:${topCat.color}">${esc(topCat.name)}</span> – Ø ${esc(fmt.pct(topCat.ratio))} der Videolänge` : 'Noch zu wenige Daten' }),
-      el('p', { html: (topPace ? `Tempo: <b>${esc(topPace.name)}</b> geschnittene Videos liegen vorn (${byPace.map(p => esc(p.name) + ' ' + esc(fmt.pct(p.ratio))).join(' · ')}). ` : '') +
-        `Zusammenhang Schnitte/min ↔ Schauanteil: <b>${rWord(rCuts)}</b> (r = ${esc(fmt.n1(rCuts).replace('NaN', '–'))}, n = ${vidsWithMetric.length} Videos). ` +
-        `Bewegung ↔ Schauanteil: <b>${rWord(rMotion)}</b> (r = ${esc(fmt.n1(rMotion))}).` })));
+      el('p', { html: parts.join(' ') })));
+
+    // metric switch – one measure for all charts below
+    const mSel = el('select', { id: 'metric', style: 'width:auto;padding:6px 10px;font-size:13px' }, ...Object.entries(METRICS).map(([k, m]) => el('option', { value: k, text: m.name })));
+    mSel.value = this.metric; mSel.addEventListener('change', () => { this.metric = mSel.value; this.render(); });
+    body.append(el('div', { class: 'card toolbar' }, el('label', { for: 'metric' }, el('b', { text: 'Kennzahl in den Diagrammen' })), mSel, el('span', { class: 'muted small', text: M.desc })));
 
     // charts
     const charts = el('div', { class: 'charts' });
-    charts.append(this.chartCard('Schauzeit nach Kategorie', 'Ø Schauzeit in % der Videolänge · über 100 % = mehrfach geschaut', w => this.hbar(byCat.map(c => ({ label: c.name, value: c.ratio * 100, n: c.n, color: c.color })), w)));
-    charts.append(this.chartCard('Schauzeit nach Tempo', 'Tempo aus Schnitten pro Minute (Schwellen: ab ' + S.config.pace.fastMin + ' schnell, bis ' + S.config.pace.slowMax + ' langsam)', w => this.hbar(byPace.map(p => ({ label: p.name + (isFinite(p.cuts) ? ' (Ø ' + fmt.n1(p.cuts) + '/min)' : ''), value: p.ratio * 100, n: p.n, color: p.color })), w)));
-    const xSel = el('select', { id: 'x-axis', style: 'width:auto;padding:5px 9px;font-size:13px' },
-      el('option', { value: 'cutsPerMin', text: 'Schnitte pro Minute' }), el('option', { value: 'motion', text: 'Bewegungsindex' }), el('option', { value: 'durationSec', text: 'Videolänge (s)' }));
+    const anyManual = byVideo.some(x => x.v && x.v.cutsManual);
+    const paceSub = hasCuts ? 'Tempo aus Schnitten pro Minute' + (anyManual ? ' (gezählt)' : '') + ': ab ' + S.config.pace.fastMin + ' «schnell», bis ' + S.config.pace.slowMax + ' «langsam»' : 'Tempo pro Video festgelegt (schnell / mittel / langsam) – Schnitte zählen unter «Einrichtung»';
+    const val = a => a.n ? mv(a) : NaN;
+    // main chart: within every category, fast vs medium vs slow
+    const gLegend = el('div', { class: 'legend' }, ...PACE_ORDER.map(p => el('span', {}, el('i', { style: 'background:' + PACE_COLOR[p] + ';border-radius:3px' }), PACE_LABEL[p])));
+    const gc = this.chartCard('Kategorie × Tempo', 'Ø ' + M.name + ' · ' + paceSub, w => this.gbar(grid.map(g => ({ label: g.name, dot: g.color, rows: g.cells.map(c => ({ label: PACE_LABEL[c.pace], value: val(c), n: c.n, color: PACE_COLOR[c.pace] })) })), w, { unit }), true);
+    gc.append(gLegend);
+    charts.append(gc);
+    const catSorted = byCat.slice().sort((a, b) => (isFinite(val(b)) ? val(b) : -1) - (isFinite(val(a)) ? val(a) : -1));
+    charts.append(this.chartCard('Nur Kategorie', 'Alle Tempi zusammen · Ø ' + M.name, w => this.hbar(catSorted.map(c => ({ label: c.name, value: val(c), n: c.n, dot: c.color })), w, { unit })));
+    charts.append(this.chartCard('Nur Tempo', 'Alle Kategorien zusammen · Ø ' + M.name, w => this.hbar(byPace.map(p => ({ label: p.name + (isFinite(p.cuts) ? ' (Ø ' + fmt.n1(p.cuts) + ' Schnitte/min)' : ''), value: val(p), n: p.n })), w, { unit })));
+    // table for the written work
+    const tcell = a => a.n ? `<b style="white-space:nowrap">${esc(this.fmtVal(mv(a), unit))}</b> <span class="muted small" style="white-space:nowrap">n = ${a.n}</span>` : '<span class="muted">–</span>';
+    const mt = el('table', {}, el('thead', {}, el('tr', {}, el('th', { text: 'Ø ' + M.name }), ...PACE_ORDER.map(p => el('th', { class: 'num', text: PACE_LABEL[p] })), el('th', { class: 'num', text: 'alle Tempi' }))),
+      el('tbody', {}, ...grid.map(g => el('tr', {}, el('td', {}, el('span', { class: 'chip', style: 'color:' + g.color }, el('i', { class: 'dot' }), el('span', { style: 'color:var(--ink-2)', text: g.name }))),
+        ...g.cells.map(c => el('td', { class: 'num', html: tcell(c) })), el('td', { class: 'num', html: tcell(g.all) }))),
+        el('tr', {}, el('td', {}, el('b', { text: 'alle Kategorien' })), ...PACE_ORDER.map(p => { const x = byPace.find(b => b.id === p); return el('td', { class: 'num', html: x ? tcell(x) : '<span class="muted">–</span>' }); }), el('td', { class: 'num', html: tcell(A) }))));
+    const mc = el('div', { class: 'card chart wide', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 0', text: 'Tabelle Kategorie × Tempo' }), el('div', { class: 'sub', style: 'padding:0 12px 6px', text: 'Ø ' + M.name + ' und Anzahl Ansichten – zum Übernehmen in die Arbeit' }), el('div', { class: 'tbl-wrap' }, mt));
+    charts.append(mc);
+    // every video, ranked
+    const ranked = byVideo.filter(x => isFinite(val(x))).sort((a, b) => val(b) - val(a));
+    const catLegend = () => el('div', { class: 'legend' }, ...cats.map(id => el('span', { html: this.shapeIcon(shapeOf(id), catColor(id)) + esc(catName(id)) })));
+    const rc = this.chartCard('Alle Videos im Vergleich', 'Jedes Video als Balken, sortiert · Ø ' + M.name + ' · Farbe und Symbol = Kategorie', w => this.rank(ranked.map(x => ({
+      label: x.title, value: val(x), n: x.n, color: catColor(x.categoryId), shape: shapeOf(x.categoryId),
+      tip: `<b>${esc(x.title)}</b><br>@${esc(x.handle)} · ${esc(catName(x.categoryId))} · ${esc(PACE_LABEL[x.pace])} · ${esc(fmt.sec(x.durationSec))}<br>Ø ${esc(fmt.pct(x.ratio))} der Länge · ${esc(fmt.sec(x.watchS))} · ${x.n} Ansicht${x.n === 1 ? '' : 'en'}`,
+    })), w, { unit }), true);
+    rc.append(catLegend());
+    charts.append(rc);
+    // course of the feed: does the measure drop with the position in the feed?
+    const BUCKET = 6, maxB = 4;
+    const buckets = [...this.groupBy(views, v => Math.min(maxB, Math.floor((v.i || 0) / BUCKET)))].sort((a, b) => a[0] - b[0])
+      .map(([b, list]) => Object.assign({ label: b >= maxB ? 'Video ' + (maxB * BUCKET + 1) + ' und später' : 'Video ' + (b * BUCKET + 1) + '–' + ((b + 1) * BUCKET) }, this.agg(list)));
+    if (buckets.length >= 2) charts.append(this.chartCard('Verlauf im Feed', 'Ø ' + M.name + ' nach Position im Feed – bleibt sie hoch, obwohl weitergescrollt wird, ist das der «Sog»', w => this.hbar(buckets.map(b => ({ label: b.label, value: val(b), n: b.n })), w, { unit })));
+    // scroll time per person
+    const perPerson = sessions.map(s => ({ label: s.code || fmt.date(s.startedAt), value: (s.durationMs || 0) / 60000, n: null, color: 'var(--s1)', tip: `<b>${esc(s.code || '–')}</b> · ${esc(fmt.date(s.startedAt))}<br>${esc(fmt.min(s.durationMs))} · ${s.views.length} Videos · ${s.endedBy === 'done' ? 'bis zum Ende' : 'abgebrochen'}` })).sort((a, b) => b.value - a.value);
+    charts.append(this.chartCard('Scrollzeit pro Person', 'Minuten im Feed, längste zuerst · anonyme Nummer', w => this.rank(perPerson, w, { unit: 'min', L: 64 })));
+    // scatter: one point per video
+    const axes = [['cutsPerMin', 'Schnitte pro Minute'], ['motion', 'Bewegungsindex'], ['durationSec', 'Videolänge (s)']].filter(([k]) => byVideo.some(x => isFinite(x[k])));
+    if (!axes.some(([k]) => k === this.xAxis)) this.xAxis = axes.length ? axes[0][0] : 'durationSec';
+    const xSel = el('select', { id: 'x-axis', style: 'width:auto;padding:5px 9px;font-size:13px' }, ...axes.map(([k, t]) => el('option', { value: k, text: t })));
     xSel.value = this.xAxis; xSel.addEventListener('change', () => { this.xAxis = xSel.value; this.render(); });
-    const xLab = { cutsPerMin: 'Schnitte pro Minute', motion: 'Bewegungsindex', durationSec: 'Videolänge (s)' }[this.xAxis];
-    const pts = byVideo.filter(x => isFinite(x[this.xAxis]) && isFinite(x.ratio)).map(x => ({
-      x: x[this.xAxis], y: x.ratio * 100, color: catColor(x.categoryId),
-      tip: `<b>${esc(x.title)}</b><br>${esc(catName(x.categoryId))} · ${esc(x.pace)} · ${esc(fmt.n1(x.cutsPerMin))} Schnitte/min<br>Ø ${esc(fmt.pct(x.ratio))} der Länge · ${x.n} Ansicht${x.n === 1 ? '' : 'en'}`,
+    const xLab = (axes.find(([k]) => k === this.xAxis) || [0, 'Videolänge (s)'])[1];
+    const pts = byVideo.filter(x => isFinite(x[this.xAxis]) && isFinite(val(x))).map(x => ({
+      x: x[this.xAxis], y: val(x), color: catColor(x.categoryId), shape: shapeOf(x.categoryId),
+      tip: `<b>${esc(x.title)}</b><br>${esc(catName(x.categoryId))} · ${esc(PACE_LABEL[x.pace])}${isFinite(x.cutsPerMin) ? ' · ' + esc(fmt.n1(x.cutsPerMin)) + ' Schnitte/min' : ''}<br>${esc(M.name)}: ${esc(this.fmtVal(val(x), unit))} · ${x.n} Ansicht${x.n === 1 ? '' : 'en'}`,
     }));
     const r = this.pearson(pts.map(p => p.x), pts.map(p => p.y));
-    const usedCats = [...new Set(byVideo.map(x => x.categoryId))];
-    const legend = el('div', { class: 'legend' }, ...usedCats.map(id => el('span', {}, el('i', { style: 'background:' + catColor(id) }), catName(id))));
-    const sc = this.chartCard('Jedes Video einzeln', `Ein Punkt pro Video · Farbe = Kategorie · r = ${fmt.n1(r)}`, w => this.scatter(pts, xLab, 'Ø Schauzeit in % der Länge', {}, w), true);
-    sc.querySelector('h3').after(el('div', { class: 'row between' }, el('span', { class: 'sub', text: 'x-Achse:' }), xSel));
-    sc.append(legend);
+    const sc = this.chartCard('Jedes Video einzeln', `Ein Punkt pro Video · ${xLab} gegen ${M.name}${isFinite(r) ? ' · r = ' + fmt.n1(r) : ''}`, w => this.scatter(pts, xLab, M.name, { unit }, w), true);
+    if (axes.length > 1) sc.querySelector('h3').after(el('div', { class: 'row between' }, el('span', { class: 'sub', text: 'x-Achse:' }), xSel));
+    sc.append(catLegend());
     charts.append(sc);
     if (est.length >= 2) {
-      const ep = est.map(e => ({ x: e.actual, y: e.est, color: 'var(--s1)', tip: `<b>${esc(fmt.date(e.s.startedAt))}</b><br>echt ${esc(fmt.n1(e.actual))} min · geschätzt ${esc(fmt.n1(e.est))} min` }));
-      charts.append(this.chartCard('Zeitgefühl', 'Geschätzte gegen tatsächliche Scrollzeit · auf der Diagonale stimmt die Schätzung', w => this.scatter(ep, 'tatsächlich (min)', 'geschätzt (min)', { diagonal: true, noTrend: true }, w), true));
+      const ep = est.map(e => ({ x: e.actual, y: e.est, color: 'var(--s1)', shape: 'circle', tip: `<b>${esc(fmt.date(e.s.startedAt))}</b><br>echt ${esc(fmt.n1(e.actual))} min · geschätzt ${esc(fmt.n1(e.est))} min` }));
+      charts.append(this.chartCard('Zeitgefühl', 'Geschätzte gegen tatsächliche Scrollzeit · auf der Diagonale stimmt die Schätzung', w => this.scatter(ep, 'tatsächlich (min)', 'geschätzt (min)', { diagonal: true, noTrend: true, unit: 'min' }, w), true));
     }
     body.append(charts);
     requestAnimationFrame(() => this.drawCharts());
 
     // video table
-    const vt = el('table', {}, el('thead', {}, el('tr', {}, ...['Video', 'Kategorie', 'Tempo', 'Schnitte/min', 'Bewegung', 'Länge', 'Ansichten', 'Ø Schauzeit', 'Ø % Länge', 'Fertig', 'Ø Wdh.', 'Likes', 'Ø Ausstieg'].map((h, i) => el('th', { class: i >= 3 ? 'num' : '', text: h })))),
-      el('tbody', {}, ...byVideo.map(x => el('tr', {},
-        el('td', {}, el('b', { text: x.title })),
-        el('td', {}, el('span', { class: 'chip', style: 'color:' + catColor(x.categoryId) }, el('i', { class: 'dot' }), el('span', { style: 'color:var(--ink-2)', text: catName(x.categoryId) }))),
-        el('td', {}, el('span', { class: 'chip pace-' + x.pace, text: x.pace })),
-        el('td', { class: 'num', text: fmt.n1(x.cutsPerMin) }), el('td', { class: 'num', text: fmt.n1(x.motion) }), el('td', { class: 'num', text: fmt.sec(x.durationSec) }),
-        el('td', { class: 'num', text: String(x.n) }), el('td', { class: 'num', text: fmt.sec(x.watchS) }),
-        el('td', { class: 'num' }, el('span', { class: 'bar-in', style: `width:${clamp(x.ratio * 40, 2, 80)}px;background:${catColor(x.categoryId)}` }), fmt.pct(x.ratio)),
-        el('td', { class: 'num', text: fmt.pct(x.completed) }), el('td', { class: 'num', text: fmt.n1(x.loops) }), el('td', { class: 'num', text: fmt.pct(x.liked) }), el('td', { class: 'num', text: fmt.pct(x.exit) })))));
-    body.append(el('div', { class: 'card', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 4px', text: 'Alle Videos' }), el('div', { class: 'tbl-wrap' }, vt)));
+    const cols = [
+      ['Video', false, x => [el('b', { text: x.title }), x.handle ? el('div', { class: 'muted small', text: '@' + x.handle }) : null]],
+      ['Kategorie', false, x => el('span', { class: 'chip', style: 'color:' + catColor(x.categoryId) }, el('i', { class: 'dot' }), el('span', { style: 'color:var(--ink-2)', text: catName(x.categoryId) }))],
+      ['Tempo', false, x => el('span', { class: 'chip pace-' + x.pace, text: x.pace })],
+      hasCuts ? ['Schnitte/min', true, x => fmt.n1(x.cutsPerMin)] : null,
+      hasMotion ? ['Bewegung', true, x => fmt.n1(x.motion)] : null,
+      ['Länge', true, x => fmt.sec(x.durationSec)],
+      ['Ansichten', true, x => String(x.n)],
+      ['Ø Schauzeit', true, x => fmt.sec(x.watchS)],
+      ['Ø % Länge', true, x => el('span', { style: 'white-space:nowrap' }, el('span', { class: 'bar-in', style: `width:${clamp(x.ratio * 40, 2, 80)}px` }), fmt.pct(x.ratio))],
+      ['bis Ende', true, x => fmt.pct(x.completed)],
+      ['< ' + SKIP_S + ' s', true, x => fmt.pct(x.skip)],
+      ['Ø Wdh.', true, x => fmt.n1(x.loops)],
+      ['Likes', true, x => fmt.pct(x.liked)],
+      ['Ø Ausstieg', true, x => fmt.pct(x.exit)],
+    ].filter(Boolean);
+    const vt = el('table', {}, el('thead', {}, el('tr', {}, ...cols.map(([h, num]) => el('th', { class: num ? 'num' : '', text: h })))),
+      el('tbody', {}, ...byVideo.map(x => el('tr', {}, ...cols.map(([, num, cellFn]) => { const c = cellFn(x); return el('td', { class: num ? 'num' : '' }, ...(Array.isArray(c) ? c.filter(Boolean) : [c])); })))));
+    body.append(el('div', { class: 'card', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 4px', text: 'Alle Videos' }), el('div', { class: 'sub', style: 'padding:0 12px 6px', text: 'Sortiert nach Ø Schauzeit in % der Länge · «< ' + SKIP_S + ' s» = sofort weitergewischt · «Ø Ausstieg» = Position im Video beim Weiterwischen' }), el('div', { class: 'tbl-wrap' }, vt)));
 
     // session table
     const st = el('table', {}, el('thead', {}, el('tr', {}, ...['Start', 'Dauer', 'Videos', 'Runden', 'Ø % Länge', 'Likes', 'geschätzt', 'Ende', ''].map((h, i) => el('th', { class: i >= 1 && i <= 6 ? 'num' : '', text: h })))),
@@ -1939,7 +2156,7 @@ const stats = {
           el('td', { class: 'num', text: fmt.min(s.durationMs) }), el('td', { class: 'num', text: s.views.length + (s.firstViews !== s.views.length ? ' (' + s.firstViews + ' neu)' : '') }),
           el('td', { class: 'num', text: String(s.roundsViewed) }), el('td', { class: 'num', text: fmt.pct(a.ratio) }), el('td', { class: 'num', text: String(sv.filter(v => v.liked).length) }),
           el('td', { class: 'num', text: s.estimateMin != null ? de(s.estimateMin) + ' min' : '–' }),
-          el('td', { text: s.endedBy === 'done' ? 'Fertig' : 'abgebrochen' }), el('td', {}, delBtn));
+          el('td', { text: s.endedBy === 'done' ? 'bis zum Ende' : 'abgebrochen' }), el('td', {}, delBtn));
       })));
     body.append(el('div', { class: 'card', style: 'padding:6px 4px' }, el('h3', { style: 'padding:10px 12px 4px', text: 'Alle Sessions' }), el('div', { class: 'tbl-wrap' }, st)));
     this.bindTips(body);
@@ -1963,25 +2180,109 @@ const stats = {
     }
   },
 
-  // horizontal bars: rows [{label, value(%), n, color}]
-  hbar(rows, W = 560) {
+  // ----- scales and formats (one unit per chart) -----
+  scale(values, unit, px) {
+    const vals = values.filter(isFinite);
+    if (unit === '%') { const max = Math.max(100, Math.ceil(Math.max(0, ...vals) / 25) * 25); const step = [25, 50, 100].find(st => px / (max / st) >= 52) || 100; return { max, step }; }
+    const mx = Math.max(0, ...vals); const t = this.ticks(0, mx || 1, clamp(Math.floor(px / 80), 2, 5)); return { max: t[t.length - 1] || 1, step: (t[1] - t[0]) || 1 };
+  },
+  fmtVal(v, unit) { if (!isFinite(v)) return '–'; return unit === '%' ? Math.round(v) + ' %' : unit === 's' ? fmt.n1(v) + ' s' : unit === 'min' ? fmt.n1(v) + ' min' : de(+v.toFixed(2)); },
+  fmtTick(t, unit) { return unit === '%' ? t + ' %' : de(+t.toFixed(2)) + (unit === 's' ? ' s' : unit === 'min' ? ' min' : ''); },
+  cut(label, px, charPx = 7.2) { const n = Math.max(6, Math.floor(px / charPx)); return label.length > n ? label.slice(0, n - 1) + '…' : label; },
+  // small marker: circle / square / triangle / diamond / pentagon – second encoding for the category besides colour
+  shapeSvg(shape, cx, cy, r, color, extra = '') {
+    const ring = `fill="${color}" stroke="var(--surface)" stroke-width="2" ${extra}`;
+    if (shape === 'square') return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" rx="1.5" ${ring}/>`;
+    if (shape === 'triangle') return `<polygon points="${cx},${cy - r * 1.15} ${cx + r * 1.1},${cy + r * 0.85} ${cx - r * 1.1},${cy + r * 0.85}" ${ring}/>`;
+    if (shape === 'diamond') return `<polygon points="${cx},${cy - r * 1.25} ${cx + r * 1.1},${cy} ${cx},${cy + r * 1.25} ${cx - r * 1.1},${cy}" ${ring}/>`;
+    if (shape === 'hexagon') { const R = r * 1.15, pts = [0, 1, 2, 3, 4, 5].map(i => { const a = i * Math.PI / 3; return (cx + R * Math.cos(a)).toFixed(1) + ',' + (cy + R * Math.sin(a)).toFixed(1); }); return `<polygon points="${pts.join(' ')}" ${ring}/>`; }
+    if (shape === 'pentagon') { const R = r * 1.15, pts = [0, 1, 2, 3, 4].map(i => { const a = -Math.PI / 2 + i * 2 * Math.PI / 5; return (cx + R * Math.cos(a)).toFixed(1) + ',' + (cy + R * Math.sin(a)).toFixed(1); }); return `<polygon points="${pts.join(' ')}" ${ring}/>`; }
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" ${ring}/>`;
+  },
+  shapeIcon(shape, color) { return `<svg class="ico" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">${this.shapeSvg(shape, 6, 6, 4.5, color, 'stroke-width="0"')}</svg>`; },
+
+  // horizontal bars, one colour, label above a full-width track: rows [{label, value, n, dot?}]
+  hbar(rows, W = 560, opt = {}) {
+    rows = rows.filter(r => r && r.label != null);
     if (!rows.length) return '<div class="empty">Keine Daten</div>';
-    const rowH = 34, top = 6, bottom = 26, L = Math.min(170, Math.round(W * 0.3)), R = 120;
+    const unit = opt.unit || '%';
+    const rowH = 48, top = 2, bottom = 24, barH = 10;
     const H = top + rows.length * rowH + bottom;
-    const max = Math.max(100, Math.ceil(Math.max(...rows.map(r => r.value || 0)) / 25) * 25);
-    const x = v => L + (W - L - R) * (v / max);
+    const { max, step } = this.scale(rows.map(r => r.value), unit, W);
+    const x = v => W * (v / max);
     let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Balkendiagramm">`;
-    const ticks = []; for (let t = 0; t <= max; t += 25) ticks.push(t);
-    for (const t of ticks) s += `<line class="grid" x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${H - bottom + 4}"/><text x="${x(t)}" y="${H - 8}" text-anchor="middle">${t} %</text>`;
-    s += `<line class="axis" x1="${L}" y1="${top}" x2="${L}" y2="${H - bottom + 4}"/>`;
     rows.forEach((r, i) => {
-      const y = top + i * rowH + 7, h = rowH - 14, v = isFinite(r.value) ? r.value : 0;
-      const maxCh = Math.max(8, Math.floor(L / 7.2));
-      const lab = r.label.length > maxCh ? r.label.slice(0, maxCh - 1) + '…' : r.label;
-      s += `<text class="lab" x="${L - 10}" y="${y + h / 2 + 4}" text-anchor="end">${esc(lab)}</text>`;
-      s += `<rect class="mark" x="${L}" y="${y}" width="${Math.max(0, x(v) - L)}" height="${h}" rx="4" fill="${r.color}"/>`;
-      s += `<text class="val" x="${x(v) + 8}" y="${y + h / 2 + 4}">${Math.round(v)} %<tspan class="n" dx="6">n = ${r.n}</tspan></text>`;
+      const y = top + i * rowH, v = isFinite(r.value) ? r.value : 0, by = y + 26;
+      const lx = r.dot ? 17 : 0;
+      const lab = this.cut(r.label, W - 120 - lx, 7.4);
+      if (r.dot) s += `<circle cx="5.5" cy="${y + 11}" r="5" fill="${r.dot}"/>`;
+      s += `<text class="lab" x="${lx}" y="${y + 15}"><title>${esc(r.label)}</title>${esc(lab)}</text>`;
+      s += `<text class="val" x="${W}" y="${y + 15}" text-anchor="end">${esc(this.fmtVal(r.value, unit))}${r.n != null ? `<tspan class="n" dx="7">n = ${r.n}</tspan>` : ''}</text>`;
+      s += `<rect class="track" x="0" y="${by}" width="${W}" height="${barH}" rx="${barH / 2}"/>`;
+      if (isFinite(r.value)) s += `<rect class="mark" x="0" y="${by}" width="${Math.max(barH, x(v))}" height="${barH}" rx="${barH / 2}"><title>${esc(r.label)}: ${esc(this.fmtVal(r.value, unit))}${r.n != null ? ' (n = ' + r.n + ')' : ''}</title></rect>`;
     });
+    const ty = H - 6;
+    for (let t = 0; t <= max + 1e-9; t += step) {
+      const tx = x(t), anchor = t === 0 ? 'start' : t >= max - 1e-9 ? 'end' : 'middle';
+      s += `<line class="tick" x1="${tx}" y1="${H - bottom + 3}" x2="${tx}" y2="${H - bottom + 8}"/><text class="tickl" x="${tx}" y="${ty}" text-anchor="${anchor}">${esc(this.fmtTick(t, unit))}</text>`;
+    }
+    return s + '</svg>';
+  },
+
+  // grouped horizontal bars: groups [{label, dot, rows: [{label, value, n, color}]}] – one block per category, one bar per tempo
+  gbar(groups, W = 640, opt = {}) {
+    if (!groups.length) return '<div class="empty">Keine Daten</div>';
+    const unit = opt.unit || '%';
+    const head = 24, rowH = 22, gap = 16, top = 2, bottom = 24, barH = 10, L = 70, R = unit === '%' ? 96 : 104;
+    const H = top + groups.reduce((a, g) => a + head + g.rows.length * rowH + gap, 0) - gap + bottom;
+    const { max, step } = this.scale(groups.flatMap(g => g.rows.map(r => r.value)), unit, W - L - R);
+    const x = v => L + (W - L - R) * (v / max);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Balkendiagramm Kategorie und Tempo">`;
+    for (let t = 0; t <= max + 1e-9; t += step) s += `<line class="grid" x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${H - bottom + 2}"/>`;
+    let y = top;
+    for (const g of groups) {
+      if (g.dot) s += `<circle cx="5.5" cy="${y + 10}" r="5" fill="${g.dot}"/>`;
+      s += `<text class="lab" x="${g.dot ? 17 : 0}" y="${y + 14}" font-weight="700">${esc(g.label)}</text>`;
+      y += head;
+      for (const r of g.rows) {
+        const v = isFinite(r.value) ? r.value : 0, by = y + (rowH - barH) / 2;
+        s += `<text class="tickl" x="${L - 8}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(r.label)}</text>`;
+        s += `<rect class="track" x="${L}" y="${by}" width="${W - L - R}" height="${barH}" rx="${barH / 2}"/>`;
+        if (r.n) s += `<rect class="mark" x="${L}" y="${by}" width="${Math.max(barH, x(v) - L)}" height="${barH}" rx="${barH / 2}" fill="${r.color}" style="fill:${r.color}"><title>${esc(g.label)} · ${esc(r.label)}: ${esc(this.fmtVal(r.value, unit))} (n = ${r.n})</title></rect>`;
+        s += r.n ? `<text class="val" x="${W}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(this.fmtVal(r.value, unit))}<tspan class="n" dx="6">n = ${r.n}</tspan></text>` : `<text class="n" x="${W}" y="${y + rowH / 2 + 4}" text-anchor="end">keine Daten</text>`;
+        y += rowH;
+      }
+      y += gap;
+    }
+    for (let t = 0; t <= max + 1e-9; t += step) { const tx = x(t), anchor = t === 0 ? 'start' : t >= max - 1e-9 ? 'end' : 'middle'; s += `<text class="tickl" x="${tx}" y="${H - 6}" text-anchor="${anchor}">${esc(this.fmtTick(t, unit))}</text>`; }
+    return s + '</svg>';
+  },
+
+  // compact ranking: one thin row per item, label column left, coloured mark, value right: rows [{label, value, n, color, shape?, tip?}]
+  rank(rows, W = 640, opt = {}) {
+    rows = rows.filter(r => r && isFinite(r.value));
+    if (!rows.length) return '<div class="empty">Keine Daten</div>';
+    const unit = opt.unit || '%';
+    const stacked = W < 480 && !opt.L; // narrow screens: label above the bar instead of a label column
+    const rowH = stacked ? 38 : 24, top = 2, bottom = 24, barH = 10;
+    const L = stacked ? 0 : (opt.L || clamp(Math.round(W * 0.36), 110, 280)), R = stacked ? 0 : (unit === '%' ? 92 : 100);
+    const H = top + rows.length * rowH + bottom;
+    const { max, step } = this.scale(rows.map(r => r.value), unit, W - L - R);
+    const x = v => L + (W - L - R) * (v / max);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rangliste">`;
+    if (!stacked) for (let t = 0; t <= max + 1e-9; t += step) s += `<line class="grid" x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${H - bottom + 2}"/>`;
+    rows.forEach((r, i) => {
+      const y = top + i * rowH, ix = r.shape ? 14 : 0, color = r.color || 'var(--s1)';
+      const by = stacked ? y + 22 : y + (rowH - barH) / 2, cy = stacked ? y + 9 : y + rowH / 2;
+      const labW = stacked ? W - 110 - ix : L - 10 - ix;
+      s += `<text class="lab" x="${ix}" y="${cy + 4}" font-size="12"><title>${esc(r.label)}</title>${esc(this.cut(r.label, labW, 6.6))}</text>`;
+      if (r.shape) s += this.shapeSvg(r.shape, 5.5, cy, 4.5, color, 'stroke-width="0"');
+      s += `<rect class="track" x="${L}" y="${by}" width="${W - L - R}" height="${barH}" rx="${barH / 2}"/>`;
+      s += `<rect class="mark" x="${L}" y="${by}" width="${Math.max(barH, x(r.value) - L)}" height="${barH}" rx="${barH / 2}" fill="${color}" style="fill:${color}"/>`;
+      s += `<text class="val" x="${W}" y="${cy + 4}" text-anchor="end">${esc(this.fmtVal(r.value, unit))}${r.n != null ? `<tspan class="n" dx="6">n = ${r.n}</tspan>` : ''}</text>`;
+      if (r.tip) s += `<rect class="hit" x="0" y="${y}" width="${W}" height="${rowH}" data-tip="${esc(r.tip)}"/>`;
+    });
+    for (let t = 0; t <= max + 1e-9; t += step) { const tx = x(t), anchor = t === 0 ? 'start' : t >= max - 1e-9 ? 'end' : 'middle'; s += `<line class="tick" x1="${tx}" y1="${H - bottom + 3}" x2="${tx}" y2="${H - bottom + 8}"/><text class="tickl" x="${tx}" y="${H - 6}" text-anchor="${anchor}">${esc(this.fmtTick(t, unit))}</text>`; }
     return s + '</svg>';
   },
 
@@ -1996,7 +2297,7 @@ const stats = {
     const X = v => L + (W - L - R) * ((v - xmin) / (xmax - xmin || 1));
     const Y = v => T + (H - T - B) * (1 - (v - ymin) / (ymax - ymin || 1));
     let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Streudiagramm">`;
-    for (const t of yt) s += `<line class="grid" x1="${L}" y1="${Y(t)}" x2="${W - R}" y2="${Y(t)}"/><text x="${L - 8}" y="${Y(t) + 4}" text-anchor="end">${de(+t.toFixed(2))}</text>`;
+    for (const t of yt) s += `<line class="grid" x1="${L}" y1="${Y(t)}" x2="${W - R}" y2="${Y(t)}"/><text x="${L - 8}" y="${Y(t) + 4}" text-anchor="end">${esc(opt.unit === '%' ? t + ' %' : de(+t.toFixed(2)))}</text>`;
     for (const t of xt) s += `<text x="${X(t)}" y="${H - B + 18}" text-anchor="middle">${de(+t.toFixed(2))}</text>`;
     s += `<line class="axis" x1="${L}" y1="${Y(ymin)}" x2="${W - R}" y2="${Y(ymin)}"/><line class="axis" x1="${L}" y1="${T}" x2="${L}" y2="${Y(ymin)}"/>`;
     s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" class="lab">${esc(xLabel)}</text>`;
@@ -2007,7 +2308,7 @@ const stats = {
       for (let i = 0; i < pts.length; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
       if (sxx) { const b = sxy / sxx, a = my - b * mx; const y0 = a + b * xmin, y1 = a + b * xmax; s += `<line x1="${X(xmin)}" y1="${Y(clamp(y0, ymin, ymax))}" x2="${X(xmax)}" y2="${Y(clamp(y1, ymin, ymax))}" stroke="var(--ink-3)" stroke-dasharray="5 5" stroke-width="1.5"/>`; }
     }
-    for (const p of pts) s += `<circle class="hit" cx="${X(p.x)}" cy="${Y(p.y)}" r="14" data-tip="${esc(p.tip)}"/><circle class="mark" cx="${X(p.x)}" cy="${Y(p.y)}" r="6.5" fill="${p.color}" stroke="var(--surface)" stroke-width="2" pointer-events="none"/>`;
+    for (const p of pts) s += `<circle class="hit" cx="${X(p.x)}" cy="${Y(p.y)}" r="14" data-tip="${esc(p.tip)}"/>` + this.shapeSvg(p.shape || 'circle', X(p.x), Y(p.y), 6.5, p.color, 'class="mark" pointer-events="none"');
     return s + '</svg>';
   },
   ticks(min, max, n) {
@@ -2047,11 +2348,11 @@ const stats = {
     for (const s of (this.sessions || [])) for (const vw of (s.views || [])) {
       const vid = S.videos.find(x => x.id === vw.videoId);
       const dur = vw.durationSec || (vid && vid.durationSec) || 0;
-      rows.push([s.id, s.code || '', new Date(s.startedAt).toISOString(), s.test, s.repeat || false, s.demo, vw.videoId, vid ? vid.title : '', vid ? catName(vid.categoryId) : '', vid ? paceClass(vid) : '', vid ? vid.cutsPerMin : '', vid ? vid.motion : '', vid ? vid.asl : '',
+      rows.push([s.id, s.code || '', new Date(s.startedAt).toISOString(), s.test, s.repeat || false, s.demo, vw.videoId, vid ? vid.title : '', vid ? '@' + (vid.handle || '') : '', vid ? catName(vid.categoryId) : '', vid ? paceClass(vid) : '', vid ? vid.cutsPerMin : '', vid ? vid.motion : '', vid ? vid.asl : '',
         +dur.toFixed(2), vw.i, vw.round, vw.revisit, +((vw.t0 || 0) / 1000).toFixed(1), +((vw.watchMs || 0) / 1000).toFixed(2), dur ? +((vw.watchMs || 0) / 1000 / dur).toFixed(3) : '', +((vw.dwellMs || 0) / 1000).toFixed(2),
-        vw.loops || 0, vw.completed, vw.maxPos, vw.exitPos, vw.liked, vw.pauses || 0, vw.commentTaps || 0, vw.shareTaps || 0, vw.sound]);
+        (vw.watchMs || 0) / 1000 < SKIP_S, vw.loops || 0, vw.completed, vw.maxPos, vw.exitPos, vw.liked, vw.pauses || 0, vw.commentTaps || 0, vw.shareTaps || 0, vw.sound]);
     }
-    this.download('feedlabor-ansichten-' + this.stamp() + '.csv', this.csv(['session_id', 'nummer', 'session_start', 'test', 'wiederholung', 'beispiel', 'video_id', 'titel', 'kategorie', 'tempo', 'schnitte_pro_min', 'bewegungsindex', 'mittlere_einstellungslaenge_s', 'videolaenge_s', 'position_im_feed', 'runde', 'wiederholt', 'start_nach_s', 'schauzeit_s', 'schauanteil', 'verweildauer_s', 'wiederholungen', 'fertig_geschaut', 'max_position_s', 'ausstieg_bei_s', 'like', 'pausen', 'kommentar_tipps', 'teilen_tipps', 'ton_an'], rows));
+    this.download('feedlabor-ansichten-' + this.stamp() + '.csv', this.csv(['session_id', 'nummer', 'session_start', 'test', 'wiederholung', 'beispiel', 'video_id', 'titel', 'creator', 'kategorie', 'tempo', 'schnitte_pro_min', 'bewegungsindex', 'mittlere_einstellungslaenge_s', 'videolaenge_s', 'position_im_feed', 'runde', 'wiederholt', 'start_nach_s', 'schauzeit_s', 'schauanteil', 'verweildauer_s', 'sofort_weitergewischt', 'wiederholungen', 'fertig_geschaut', 'max_position_s', 'ausstieg_bei_s', 'like', 'pausen', 'kommentar_tipps', 'teilen_tipps', 'ton_an'], rows));
   },
   exportSessions() {
     const rows = (this.sessions || []).map(s => {
